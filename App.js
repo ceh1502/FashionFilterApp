@@ -93,7 +93,7 @@ const codiStyles = StyleSheet.create({
   },
 });
 
-function App(){
+function App() {
   const [currentScreen, setCurrentScreen] = useState('Landing');
 
   const navigation = {

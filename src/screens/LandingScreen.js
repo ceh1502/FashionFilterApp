@@ -20,7 +20,7 @@ const backgroundImages = [
   'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=800&fit=crop',
 ];
 
-function App(){
+function LandingScreen({navigation}){
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   // 배경 이미지 자동 전환
@@ -50,9 +50,18 @@ function App(){
   }, [fadeAnim]);
 
   const handleButtonPress = (buttonType) => {
-    console.log(`${buttonType} 버튼 클릭됨`);
-    // 여기에 각 버튼별 네비게이션 추가
-  };
+  console.log(`${buttonType} 버튼 클릭됨`); // ← 이게 나오나요?
+  console.log('navigation:', navigation); // ← navigation 객체 확인
+  
+  if (navigation && navigation.navigate) {
+    console.log('navigate 함수 호출!'); // ← 이것도 추가
+    if (buttonType === '코디') {
+      navigation.navigate('Codi');
+    }
+  } else {
+    console.log('navigation이 없거나 navigate 함수가 없음'); // ← 이것도 추가
+  }
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -299,4 +308,4 @@ buttonSubText: {
   },
 });
 
-export default App;
+export default LandingScreen;
