@@ -188,23 +188,7 @@ function BodyTypeScreen({ navigation }) {
       </ScrollView>
 
       {/* 하단 네비게이션 버튼들 */}
-      <View style={styles.bottomButtons}>
-        <TouchableOpacity 
-          style={styles.bottomButton}
-          onPress={() => navigation.navigate('Codi')}
-        >
-          <Text style={styles.bottomButtonText}>코디</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.bottomButton, styles.activeBottomButton]}>
-          <Text style={[styles.bottomButtonText, styles.activeBottomButtonText]}>체형 맞춤</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.bottomButton}
-          onPress={() => navigation.navigate('Question')}
-        >
-          <Text style={styles.bottomButtonText}>취향 분석</Text>
-        </TouchableOpacity>
-      </View>
+     
     </SafeAreaView>
   );
 }
