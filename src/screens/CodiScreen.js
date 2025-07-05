@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import products from '../data/products.json';
+
+// Image map for local images
+const imageMap = {
+  "top_black_1.webp": require('../assets/images/top_black_1.webp'),
+  "top_black_2.webp": require('../assets/images/top_black_2.webp'),
+  "top_black_3.webp": require('../assets/images/top_black_3.webp'),
+  "top_black_4.webp": require('../assets/images/top_black_4.webp'),
+  "top_white_1.webp": require('../assets/images/top_white_1.webp'),
+  "top_white_2.webp": require('../assets/images/top_white_2.webp'),
+  "top_white_3.webp": require('../assets/images/top_white_3.webp'),
+  "top_white_4.webp": require('../assets/images/top_white_4.webp'),
+  "btm_1.webp": require('../assets/images/btm_1.webp'),
+  "btm_2.webp": require('../assets/images/btm_2.webp'),
+  "btm_3.webp": require('../assets/images/btm_3.webp'),
+  "btm_4.webp": require('../assets/images/btm_4.webp'),
+  "shoe_1.webp": require('../assets/images/shoe_1.webp'),
+  "shoe_2.webp": require('../assets/images/shoe_2.webp'),
+};
 
 function CodiScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState('상의');
   const [selectedColor, setSelectedColor] = useState(null);
-
-  const products = [
-    { id: 1, name: '베이직 티셔츠', brand: '브랜드', category: '상의', color: '검정', price: '29,000원' },
-    { id: 2, name: '크롭 티셔츠', brand: '브랜드', category: '상의', color: '흰색', price: '25,000원' },
-    { id: 3, name: '오버핏 셔츠', brand: '브랜드', category: '상의', color: '베이지', price: '39,000원' },
-    { id: 4, name: '니트 스웨터', brand: '브랜드', category: '상의', color: '핑크', price: '45,000원' },
-    { id: 5, name: '데님 자켓', brand: '브랜드', category: '상의', color: '검정', price: '89,000원' },
-    { id: 6, name: '후드 티셔츠', brand: '브랜드', category: '상의', color: '검정', price: '55,000원' },
-    { id: 7, name: '슬림 진', brand: '브랜드', category: '하의', color: '검정', price: '79,000원' },
-    { id: 8, name: '와이드 팬츠', brand: '브랜드', category: '하의', color: '베이지', price: '65,000원' },
-    { id: 9, name: '치노 팬츠', brand: '브랜드', category: '하의', color: '검정', price: '59,000원' },
-    { id: 10, name: '트레이닝 팬츠', brand: '브랜드', category: '하의', color: '흰색', price: '45,000원' },
-    { id: 11, name: '스니커즈', brand: '브랜드', category: '신발', color: '흰색', price: '129,000원' },
-    { id: 12, name: '로퍼', brand: '브랜드', category: '신발', color: '검정', price: '149,000원' },
-  ];
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = product.category === selectedCategory;
@@ -37,9 +41,7 @@ function CodiScreen({ navigation }) {
       style={codiStyles.productCard}
       onPress={() => handleProductPress(product)}
     >
-      <View style={codiStyles.productImage}>
-        <Text style={codiStyles.placeholderText}>이미지</Text>
-      </View>
+      <Image source={imageMap[product.image]} style={codiStyles.productImage} />
       <View style={codiStyles.productInfo}>
         <Text style={codiStyles.brandText}>{product.brand}</Text>
         <Text style={codiStyles.productName}>{product.name}</Text>

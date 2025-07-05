@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "name": "반팔 티셔츠",
+    "brand": "CDG",
+    "category": "상의",
+    "color": "검정",
+    "price": "100,000KRW",
+    "image": "top_black_1.webp"
+  },
+  {
+    "id": 2,
+    "name": "후드 티셔츠",
+    "brand": "Thisisneverthat",
+    "category": "상의",
+    "color": "검정",
+    "price": "60,000KRW",
+    "image": "top_black_2.webp"
+  },
+  {
+    "id": 3,
+    "name": "니트",
+    "brand": "VTWO",
+    "category": "상의",
+    "color": "검정",
+    "price": "50,000KRW",
+    "image": "top_black_3.webp"
+  },
+  {
+    "id": 4,
+    "name": "셔츠",
+    "brand": "플레이스 스튜디오맨",
+    "category": "상의",
+    "color": "검정",
+    "price": "36,000KRW",
+    "image": "top_black_4.webp"
+  },
+  {
+    "id": 5,
+    "name": "반팔 티셔츠",
+    "brand": "Thisisneverthat",
+    "category": "상의",
+    "color": "흰색",
+    "price": "50,000KRW",
+    "image": "top_white_1.webp"    
+  },
+  {
+    "id": 6,
+    "name": "반팔 티셔츠",
+    "brand": "위드썸",
+    "category": "상의",
+    "color": "흰색",
+    "price": "50,000KRW",
+    "image": "top_white_2.webp"    
+  },
+  {
+    "id": 7,
+    "name": "긴팔 티셔츠",
+    "brand": "팀코믹스",
+    "category": "상의",
+    "color": "흰색",
+    "price": "50,000KRW",
+    "image": "top_white_3.webp"    
+  },
+  {
+    "id": 8,
+    "name": "맨투맨",
+    "brand": "1993 studio",
+    "category": "상의",
+    "color": "흰색",
+    "price": "70,000KRW",
+    "image": "top_white_4.webp"    
+  },
+  {
+    "id": 9,
+    "name": "슬랙스",
+    "brand": "무탠다드",
+    "category": "하의",
+    "color": "검정",
+    "price": "50,000KRW",
+    "image": "btm_1.webp"    
+  },
+  {
+    "id": 10,
+    "name": "치노팬츠",
+    "brand": "엑스컨테이너",
+    "category": "하의",
+    "color": "베이지",
+    "price": "65,000KRW",
+    "image": "btm_2.webp"      
+  },
+  {
+    "id": 11,
+    "name": "숏팬츠",
+    "brand": "바운더리",
+    "category": "하의",
+    "color": "검정",
+    "price": "50,000KRW",
+    "image": "btm_3.webp"      
+  },
+  {
+    "id": 12,
+    "name": "데님 팬츠",
+    "brand": "토피",
+    "category": "하의",
+    "color": "검정",
+    "price": "50,000KRW",
+    "image": "btm_4.webp"      
+  },
+  {
+    "id": 13,
+    "name": "더비슈즈",
+    "brand": "닥터마틴",
+    "category": "신발",
+    "color": "검정",
+    "price": "200,000KRW",
+    "image": "shoe_1.webp"      
+  },
+  {
+    "id": 14,
+    "name": "스니커즈",
+    "brand": "나이키",
+    "category": "신발",
+    "color": "아이보리",
+    "price": "200,000KRW",
+    "image": "shoe_2.webp"     
+  }
+]
