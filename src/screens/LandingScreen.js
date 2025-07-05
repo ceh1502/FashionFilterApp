@@ -50,22 +50,16 @@ function LandingScreen({navigation}){
   }, [fadeAnim]);
 
   const handleButtonPress = (buttonType) => {
-  console.log(`${buttonType} 버튼 클릭됨`);
-  console.log('navigation:', navigation);
-  
-  if (navigation && navigation.navigate) {
-    console.log('navigate 함수 호출!');
-    if (buttonType === '코디') {
-      navigation.navigate('Codi');
-    } else if (buttonType === '체형 맞춤') {
-      navigation.navigate('BodyType');  // ← 이 줄 추가!
-    } else if (buttonType === '취향 분석') {
-      navigation.navigate('Question');   // ← 이 줄도 추가!
+    if (navigation && navigation.navigate) {
+      if (buttonType === '코디') {
+        navigation.navigate('MainTabs', { screen: 'Codi' });
+      } else if (buttonType === '체형 맞춤') {
+        navigation.navigate('MainTabs', { screen: 'BodyType' });
+      } else if (buttonType === '취향 분석') {
+        navigation.navigate('MainTabs', { screen: 'Question' });
+      }
     }
-  } else {
-    console.log('navigation이 없거나 navigate 함수가 없음');
-  }
-};
+  };
 
   return (
     <SafeAreaView style={styles.container}>

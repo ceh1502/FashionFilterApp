@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 function CodiScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState('상의');
@@ -50,13 +51,9 @@ function CodiScreen({ navigation }) {
   return (
     <SafeAreaView style={codiStyles.container}>
       <View style={codiStyles.header}>
-        <TouchableOpacity 
-          style={codiStyles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={codiStyles.backButtonText}>←</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
+          <Text style={codiStyles.headerTitle}>뮤신샤</Text>
         </TouchableOpacity>
-        <Text style={codiStyles.headerTitle}>무신사</Text>
       </View>
 
       <View style={codiStyles.categorySection}>
@@ -147,20 +144,11 @@ const codiStyles = StyleSheet.create({
     backgroundColor: '#000000',
     position: 'relative',
   },
-  backButton: {
-    position: 'absolute',
-    left: 20,
-    padding: 10,
-  },
-  backButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
   headerTitle: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
+    marginTop: 10,
   },
   categorySection: {
     paddingHorizontal: 20,
@@ -188,6 +176,11 @@ const codiStyles = StyleSheet.create({
   selectedCategoryButton: {
     backgroundColor: '#000',
     borderColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1.0,
+    shadowRadius: 6,
+    elevation: 8,
   },
   categoryText: {
     fontSize: 14,
@@ -216,8 +209,11 @@ const codiStyles = StyleSheet.create({
     borderColor: '#ddd',
   },
   selectedColorButton: {
-    borderColor: '#000',
-    borderWidth: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1.0,
+    shadowRadius: 6,
+    elevation: 8,
   },
   productSection: {
     flexDirection: 'row',

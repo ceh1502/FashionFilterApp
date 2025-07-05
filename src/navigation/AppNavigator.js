@@ -1,62 +1,83 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-
-// 스크린 import
-import LandingScreen from '../screens/LandingScreen';
+import { NavigationContainer } from '@react-navigation/native';
 import CodiScreen from '../screens/CodiScreen';
 import BodyTypeScreen from '../screens/BodyTypeScreen';
 import QuestionScreen from '../screens/QuestionScreen';
+import LandingScreen from '../screens/LandingScreen';
+import { View } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function AppNavigator() {
+function TabBarIcon({ focused, position }) {
+  // Different shapes for left, middle, right (for demo, just position them)
+  let style = {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: focused ? '#000' : 'transparent',
+    borderWidth: 2,
+    borderColor: '#000',
+    marginBottom: 4,
+  };
+  // Optionally, you can add more visual difference by position
+  return <View style={style} />;
+}
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          height: 70,
+          borderTopWidth: 0.5,
+          borderTopColor: '#eee',
+        },
+      }}
+    >
+      <Tab.Screen
+        name="BodyType"
+        component={BodyTypeScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name="person-outline" size={28} color={focused ? "#000" : "#aaa"} style={{ marginTop: 4 }} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Codi"
+        component={CodiScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name="shirt-outline" size={28} color={focused ? "#000" : "#aaa"} style={{ marginTop: 4 }} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Question"
+        component={QuestionScreen}
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name="heart-outline" size={28} color={focused ? "#000" : "#aaa"} style={{ marginTop: 4 }} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Landing"
-        screenOptions={{
-          headerShown: false, // 상단 헤더 숨기기
-          gestureEnabled: true, // 스와이프로 뒤로가기 가능
-          cardStyleInterpolator: ({ current, layouts }) => {
-            return {
-              cardStyle: {
-                transform: [
-                  {
-                    translateX: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [layouts.screen.width, 0],
-                    }),
-                  },
-                ],
-              },
-            };
-          },
-        }}
-      >
-        <Stack.Screen 
-          name="Landing" 
-          component={LandingScreen}
-          options={{ title: '홈' }}
-        />
-        <Stack.Screen 
-          name="Codi" 
-          component={CodiScreen}
-          options={{ title: '코디' }}
-        />
-        <Stack.Screen 
-          name="BodyType" 
-          component={BodyTypeScreen}
-          options={{ title: '체형 맞춤' }}
-        />
-        <Stack.Screen 
-          name="Question" 
-          component={QuestionScreen}
-          options={{ title: '취향 분석' }}
-        />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Landing" component={LandingScreen} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-export default AppNavigator;
