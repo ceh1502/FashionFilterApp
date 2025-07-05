@@ -50,16 +50,20 @@ function LandingScreen({navigation}){
   }, [fadeAnim]);
 
   const handleButtonPress = (buttonType) => {
-  console.log(`${buttonType} 버튼 클릭됨`); // ← 이게 나오나요?
-  console.log('navigation:', navigation); // ← navigation 객체 확인
+  console.log(`${buttonType} 버튼 클릭됨`);
+  console.log('navigation:', navigation);
   
   if (navigation && navigation.navigate) {
-    console.log('navigate 함수 호출!'); // ← 이것도 추가
+    console.log('navigate 함수 호출!');
     if (buttonType === '코디') {
       navigation.navigate('Codi');
+    } else if (buttonType === '체형 맞춤') {
+      navigation.navigate('BodyType');  // ← 이 줄 추가!
+    } else if (buttonType === '취향 분석') {
+      navigation.navigate('Question');   // ← 이 줄도 추가!
     }
   } else {
-    console.log('navigation이 없거나 navigate 함수가 없음'); // ← 이것도 추가
+    console.log('navigation이 없거나 navigate 함수가 없음');
   }
 };
 
