@@ -90,21 +90,21 @@ function LandingScreen({navigation}){
         {/* 하단 버튼들 */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
-            style={[styles.actionButton, styles.primaryButton]}
-            onPress={() => handleButtonPress('코디')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.primaryButtonText}>코디</Text>
-            <Text style={styles.buttonSubText}>스타일링 추천</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
             style={[styles.actionButton, styles.secondaryButton]}
             onPress={() => handleButtonPress('체형 맞춤')}
             activeOpacity={0.8}
           >
             <Text style={styles.secondaryButtonText}>체형 맞춤</Text>
             <Text style={styles.buttonSubText}>AI 분석</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.primaryButton]}
+            onPress={() => handleButtonPress('코디')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.primaryButtonText}>코디</Text>
+            <Text style={styles.buttonSubText}>스타일링 추천</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
