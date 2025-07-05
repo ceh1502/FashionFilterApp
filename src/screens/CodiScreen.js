@@ -119,9 +119,9 @@ function CodiScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={codiStyles.scrollView}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         contentContainerStyle={codiStyles.scrollContent}
       >
         <View style={codiStyles.productsGrid}>
