@@ -2,27 +2,9 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 
 function CodiScreen({ navigation }) {
-
-  // useState is a hook that allows you to add state to a functional component
-  // it returns an array with two elements: the current state value and a function to update the state
-  // the first element is the current state value, and the second element is the function to update the state
-  // the function to update the state is called setState
-  // the state is a value that can change over time by calling the setState function
-
   const [selectedCategory, setSelectedCategory] = useState('상의');
-  // same as:
-  // const stateArray = useState('상의');
-  // const selectedCategory = stateArray[0];     initially set to '상의'
-  // const setSelectedCategory = stateArray[1];
-  
-  const [selectedColor, setSelectedColor] = useState(null); // null means no color is selected
-  // same as:
-  // const stateArray = useState(null);
-  // const selectedColor = stateArray[0];     initially set to null
-  // const setSelectedColor = stateArray[1];
+  const [selectedColor, setSelectedColor] = useState(null);
 
-
-  // 더미 상품 데이터
   const products = [
     { id: 1, name: '베이직 티셔츠', brand: '브랜드', category: '상의', color: '검정', price: '29,000원' },
     { id: 2, name: '크롭 티셔츠', brand: '브랜드', category: '상의', color: '흰색', price: '25,000원' },
@@ -38,7 +20,6 @@ function CodiScreen({ navigation }) {
     { id: 12, name: '로퍼', brand: '브랜드', category: '신발', color: '검정', price: '149,000원' },
   ];
 
-  // 필터링된 상품들
   const filteredProducts = products.filter(product => {
     const categoryMatch = product.category === selectedCategory;
     const colorMatch = selectedColor ? product.color === selectedColor : true;
@@ -68,7 +49,6 @@ function CodiScreen({ navigation }) {
 
   return (
     <SafeAreaView style={codiStyles.container}>
-      {/* 헤더 */}
       <View style={codiStyles.header}>
         <TouchableOpacity 
           style={codiStyles.backButton}
@@ -76,10 +56,9 @@ function CodiScreen({ navigation }) {
         >
           <Text style={codiStyles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={codiStyles.headerTitle}>뮤신샤</Text>
+        <Text style={codiStyles.headerTitle}>무신사</Text>
       </View>
 
-      {/* 종류 필터 */}
       <View style={codiStyles.categorySection}>
         <Text style={codiStyles.filterLabel}>종류</Text>
         <View style={codiStyles.categoryContainer}>
@@ -106,7 +85,6 @@ function CodiScreen({ navigation }) {
         </View>
       </View>
 
-      {/* 색상 필터 */}
       <View style={codiStyles.colorSection}>
         <Text style={codiStyles.filterLabel}>색상</Text>
         <View style={codiStyles.colorContainer}>
@@ -135,7 +113,6 @@ function CodiScreen({ navigation }) {
         </View>
       </View>
 
-
       <View style={codiStyles.productSection}>
         <Text style={codiStyles.filterLabel}>제품</Text>
         <TouchableOpacity style={codiStyles.moreButton}>
@@ -143,7 +120,6 @@ function CodiScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* 상품 그리드 */}
       <ScrollView 
         style={codiStyles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -160,7 +136,7 @@ function CodiScreen({ navigation }) {
 const codiStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -174,61 +150,55 @@ const codiStyles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 20,
-    padding: 5,
+    padding: 10,
   },
   backButtonText: {
-    fontSize: 20,
     color: '#FFFFFF',
+    fontSize: 18,
     fontWeight: 'bold',
   },
   headerTitle: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF',
   },
   categorySection: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 15,
-  },
-  colorSection: {
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-  },
-  productSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between', 
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 15,
+    paddingBottom: 10,
   },
   filterLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
+    marginBottom: 10,
+    color: '#333',
   },
   categoryContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   categoryButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 15,
     paddingVertical: 8,
-    marginRight: 8,
+    marginRight: 10,
     borderRadius: 20,
-    backgroundColor: '#F5F5F5',
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   selectedCategoryButton: {
-    backgroundColor: '#000000',
+    backgroundColor: '#000',
+    borderColor: '#000',
   },
   categoryText: {
     fontSize: 14,
-    color: '#666666',
-    fontWeight: '500',
+    color: '#666',
   },
   selectedCategoryText: {
-    color: '#FFFFFF',
+    color: '#fff',
+  },
+  colorSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
   colorContainer: {
     flexDirection: 'row',
@@ -238,25 +208,30 @@ const codiStyles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    marginRight: 12,
+    marginRight: 10,
     borderWidth: 2,
     borderColor: 'transparent',
   },
   whiteColorBorder: {
-    borderColor: '#E0E0E0',
+    borderColor: '#ddd',
   },
   selectedColorButton: {
-    borderColor: '#000000',
+    borderColor: '#000',
     borderWidth: 3,
   },
+  productSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
   moreButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    padding: 5,
   },
   moreText: {
     fontSize: 16,
-    color: '#666666',
-    fontWeight: 'bold',
+    color: '#666',
   },
   scrollView: {
     flex: 1,
@@ -273,39 +248,48 @@ const codiStyles = StyleSheet.create({
   productCard: {
     width: '48%',
     marginBottom: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   productImage: {
     width: '100%',
     height: 200,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   placeholderText: {
-    color: '#999999',
+    color: '#999',
     fontSize: 14,
   },
   productInfo: {
-    paddingHorizontal: 4,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
   },
   brandText: {
     fontSize: 12,
-    color: '#999999',
-    marginBottom: 4,
+    color: '#999',
+    marginBottom: 2,
   },
   productName: {
     fontSize: 14,
-    color: '#000000',
+    fontWeight: 'bold',
+    color: '#333',
     marginBottom: 4,
-    fontWeight: '500',
   },
   priceText: {
     fontSize: 14,
-    color: '#000000',
     fontWeight: 'bold',
+    color: '#000',
   },
 });
+
 
 export default CodiScreen;
