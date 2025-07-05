@@ -10,7 +10,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 function BodyTypeScreen({ navigation }) {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -18,31 +18,71 @@ function BodyTypeScreen({ navigation }) {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
-  // 이미지 선택 함수
+  // 실제 갤러리에서 사진 선택
   const selectImage = () => {
+    Alert.alert(
+      '사진 선택',
+      '어떤 방식으로 사진을 가져올까요?',
+      [
+        {
+          text: '갤러리',
+          onPress: openGallery
+        },
+        {
+          text: '취소',
+          style: 'cancel'
+        }
+      ]
+    );
+  };
+
+  // 갤러리 열기 (Image Picker 사용)
+  const openGallery = () => {
     const options = {
       mediaType: 'photo',
-      includeBase64: true,
-      maxHeight: 2000,
-      maxWidth: 2000,
+      quality: 0.8,
+      includeBase64: false,
     };
 
     launchImageLibrary(options, (response) => {
-      if (response.didCancel || response.error) {
-        console.log('Image selection cancelled or error');
+      if (response.didCancel || response.errorMessage) {
+        console.log('갤러리 선택 취소 또는 에러');
         return;
       }
 
       if (response.assets && response.assets[0]) {
         setSelectedImage(response.assets[0]);
-        // 새 이미지 선택 시 기존 분석 결과 초기화
         setAnalysisResult(null);
         setRecommendations([]);
+        Alert.alert('성공', '사진이 업로드되었습니다!');
       }
     });
   };
 
-  // Google Vision API + AI 분석 함수
+  // 카메라 열기
+  const openCamera = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.8,
+      includeBase64: false,
+    };
+
+    launchCamera(options, (response) => {
+      if (response.didCancel || response.errorMessage) {
+        console.log('카메라 촬영 취소 또는 에러');
+        return;
+      }
+
+      if (response.assets && response.assets[0]) {
+        setSelectedImage(response.assets[0]);
+        setAnalysisResult(null);
+        setRecommendations([]);
+        Alert.alert('성공', '사진이 촬영되었습니다!');
+      }
+    });
+  };
+
+  // AI 분석 함수 (개선된 버전)
   const analyzeImage = async () => {
     if (!selectedImage) {
       Alert.alert('알림', '먼저 사진을 업로드해주세요.');
@@ -52,48 +92,149 @@ function BodyTypeScreen({ navigation }) {
     setIsAnalyzing(true);
 
     try {
-      // Google Vision API 호출 (실제 구현 시)
-      // const visionResult = await callGoogleVisionAPI(selectedImage.base64);
+      // 실제 분석 시뮬레이션 (3초)
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // 임시 분석 결과 (실제로는 API 응답)
+      // 랜덤 분석 결과 생성 (더 현실적)
+      const bodyTypes = ['슬림', '보통', '통통', '운동체형'];
+      const heights = ['작음', '보통', '큼'];
+      const shoulders = ['좁음', '보통', '넓음'];
+      
+      const randomBodyType = bodyTypes[Math.floor(Math.random() * bodyTypes.length)];
+      const randomHeight = heights[Math.floor(Math.random() * heights.length)];
+      const randomShoulder = shoulders[Math.floor(Math.random() * shoulders.length)];
+      
       const mockAnalysisResult = {
-        bodyType: '슬림',
-        height: '보통',
-        shoulderWidth: '좁음',
-        confidence: 85,
+        bodyType: randomBodyType,
+        height: randomHeight,
+        shoulderWidth: randomShoulder,
+        confidence: Math.floor(Math.random() * 20) + 80, // 80-99%
       };
 
-      // 임시 추천 상품들 (실제로는 AI가 분석 후 추천)
-      const mockRecommendations = [
-        {
-          id: 1,
-          name: '슬림핏 셔츠',
-          reason: '좁은 어깨라인에 맞는 슬림핏',
-          image: 'https://via.placeholder.com/150x200/4A90E2/ffffff?text=Slim+Shirt',
-          price: '45,000원'
-        },
-        {
-          id: 2,
-          name: '스트레이트 팬츠',
-          reason: '슬림 체형에 어울리는 직선 라인',
-          image: 'https://via.placeholder.com/150x200/50C878/ffffff?text=Straight+Pants',
-          price: '89,000원'
-        },
-        {
-          id: 3,
-          name: '오버핏 니트',
-          reason: '상체 볼륨감을 주는 오버핏',
-          image: 'https://via.placeholder.com/150x200/FF6B6B/ffffff?text=Overfit+Knit',
-          price: '65,000원'
-        },
-      ];
+      // 체형별 맞춤 추천
+      const getRecommendationsByBodyType = (bodyType) => {
+        const recommendations = {
+          '슬림': [
+            {
+              id: 1,
+              name: '오버핏 후드',
+              reason: '볼륨감을 주어 균형잡힌 실루엣',
+              image: 'https://via.placeholder.com/150x200/FF6B6B/ffffff?text=Oversized+Hood',
+              price: '89,000원',
+              brand: 'MUSINSA'
+            },
+            {
+              id: 2,
+              name: '와이드 카고팬츠',
+              reason: '하체 볼륨으로 전체적인 균형',
+              image: 'https://via.placeholder.com/150x200/4A90E2/ffffff?text=Wide+Cargo',
+              price: '129,000원',
+              brand: 'ADLV'
+            },
+            {
+              id: 3,
+              name: '청키 스니커즈',
+              reason: '발목 볼륨으로 하체 보완',
+              image: 'https://via.placeholder.com/150x200/50C878/ffffff?text=Chunky+Sneakers',
+              price: '159,000원',
+              brand: 'NIKE'
+            }
+          ],
+          '보통': [
+            {
+              id: 1,
+              name: '슬림핏 니트',
+              reason: '표준 체형에 가장 잘 어울리는 핏',
+              image: 'https://via.placeholder.com/150x200/9B59B6/ffffff?text=Slim+Knit',
+              price: '79,000원',
+              brand: 'UNIQLO'
+            },
+            {
+              id: 2,
+              name: '스트레이트 진',
+              reason: '깔끔하고 세련된 하체 라인',
+              image: 'https://via.placeholder.com/150x200/34495E/ffffff?text=Straight+Jeans',
+              price: '98,000원',
+              brand: 'LEVI\'S'
+            },
+            {
+              id: 3,
+              name: '클래식 로퍼',
+              reason: '어떤 스타일에도 매치 가능',
+              image: 'https://via.placeholder.com/150x200/8B4513/ffffff?text=Classic+Loafer',
+              price: '189,000원',
+              brand: 'CLARKS'
+            }
+          ],
+          '통통': [
+            {
+              id: 1,
+              name: 'V넥 가디건',
+              reason: 'V라인으로 상체를 슬림하게',
+              image: 'https://via.placeholder.com/150x200/2C3E50/ffffff?text=V-neck+Cardigan',
+              price: '119,000원',
+              brand: 'COS'
+            },
+            {
+              id: 2,
+              name: '다크 스키니진',
+              reason: '어두운 색상으로 하체 슬림 효과',
+              image: 'https://via.placeholder.com/150x200/1A1A1A/ffffff?text=Dark+Skinny',
+              price: '89,000원',
+              brand: 'ZARA'
+            },
+            {
+              id: 3,
+              name: '슬림 첼시부츠',
+              reason: '발목 라인을 깔끔하게',
+              image: 'https://via.placeholder.com/150x200/654321/ffffff?text=Chelsea+Boots',
+              price: '229,000원',
+              brand: 'DR.MARTENS'
+            }
+          ],
+          '운동체형': [
+            {
+              id: 1,
+              name: '피팅 티셔츠',
+              reason: '운동으로 다져진 체형을 살리는 핏',
+              image: 'https://via.placeholder.com/150x200/E74C3C/ffffff?text=Fitted+Tee',
+              price: '45,000원',
+              brand: 'UNDER ARMOUR'
+            },
+            {
+              id: 2,
+              name: '테이퍼드 팬츠',
+              reason: '상체와 하체의 균형을 맞추는 실루엣',
+              image: 'https://via.placeholder.com/150x200/27AE60/ffffff?text=Tapered+Pants',
+              price: '139,000원',
+              brand: 'STONE ISLAND'
+            },
+            {
+              id: 3,
+              name: '러닝 스니커즈',
+              reason: '활동적인 이미지와 잘 어울림',
+              image: 'https://via.placeholder.com/150x200/F39C12/ffffff?text=Running+Shoes',
+              price: '179,000원',
+              brand: 'ADIDAS'
+            }
+          ]
+        };
+        
+        return recommendations[bodyType] || recommendations['보통'];
+      };
 
-      // 2초 후 결과 표시 (실제 API 호출 시뮬레이션)
-      setTimeout(() => {
-        setAnalysisResult(mockAnalysisResult);
-        setRecommendations(mockRecommendations);
-        setIsAnalyzing(false);
-      }, 2000);
+      const mockRecommendations = getRecommendationsByBodyType(randomBodyType);
+
+      setAnalysisResult(mockAnalysisResult);
+      setRecommendations(mockRecommendations);
+      setIsAnalyzing(false);
+
+      // 분석 완료 알림
+      Alert.alert(
+        '분석 완료! 🎉',
+        `${randomBodyType} 체형으로 분석되었습니다.\n맞춤 상품을 확인해보세요!`,
+        [{ text: '확인' }]
+      );
 
     } catch (error) {
       console.error('Analysis error:', error);
@@ -103,14 +244,15 @@ function BodyTypeScreen({ navigation }) {
   };
 
   const renderRecommendation = (item) => (
-    <View key={item.id} style={styles.recommendationCard}>
+    <TouchableOpacity key={item.id} style={styles.recommendationCard}>
       <Image source={{ uri: item.image }} style={styles.recommendationImage} />
       <View style={styles.recommendationInfo}>
+        <Text style={styles.brandText}>{item.brand}</Text>
         <Text style={styles.recommendationName}>{item.name}</Text>
         <Text style={styles.recommendationReason}>{item.reason}</Text>
         <Text style={styles.recommendationPrice}>{item.price}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -123,23 +265,28 @@ function BodyTypeScreen({ navigation }) {
         >
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>체형 맞춤</Text>
+        <Text style={styles.headerTitle}>AI 체형 분석</Text>
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* 사진 업로드 섹션 */}
         <View style={styles.uploadSection}>
-          <Text style={styles.sectionTitle}>체형 분석을 위한 사진 업로드</Text>
+          <Text style={styles.sectionTitle}>📸 전신 사진을 업로드하세요</Text>
+          <Text style={styles.sectionSubtitle}>AI가 당신의 체형을 분석하여 맞춤 옷을 추천해드립니다</Text>
           
           <TouchableOpacity style={styles.uploadButton} onPress={selectImage}>
-            <Text style={styles.uploadButtonText}>📷 사진 선택하기</Text>
+            <Text style={styles.uploadButtonText}>
+              {selectedImage ? '📷 다른 사진 선택하기' : '📷 사진 업로드하기'}
+            </Text>
           </TouchableOpacity>
 
           {/* 선택된 이미지 미리보기 */}
           {selectedImage && (
             <View style={styles.imagePreviewContainer}>
-              <Text style={styles.previewLabel}>선택된 사진:</Text>
-              <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />
+              <Text style={styles.previewLabel}>업로드된 사진:</Text>
+              <View style={styles.imageFrame}>
+                <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />
+              </View>
             </View>
           )}
         </View>
@@ -155,25 +302,44 @@ function BodyTypeScreen({ navigation }) {
               {isAnalyzing ? (
                 <View style={styles.loadingContainer}>
                   <ActivityIndicator color="#ffffff" size="small" />
-                  <Text style={styles.analyzeButtonText}>분석 중...</Text>
+                  <Text style={styles.analyzeButtonText}>AI 분석 중...</Text>
                 </View>
               ) : (
                 <Text style={styles.analyzeButtonText}>🤖 AI 체형 분석 시작</Text>
               )}
             </TouchableOpacity>
+            
+            {isAnalyzing && (
+              <Text style={styles.analysisInfo}>
+                사진을 분석하여 체형을 파악하고 있습니다...
+              </Text>
+            )}
           </View>
         )}
 
         {/* 분석 결과 */}
         {analysisResult && (
           <View style={styles.resultSection}>
-            <Text style={styles.sectionTitle}>분석 결과</Text>
+            <Text style={styles.sectionTitle}>📊 분석 결과</Text>
             <View style={styles.resultCard}>
-              <Text style={styles.resultTitle}>체형 분석</Text>
-              <Text style={styles.resultItem}>• 체형: {analysisResult.bodyType}</Text>
-              <Text style={styles.resultItem}>• 키: {analysisResult.height}</Text>
-              <Text style={styles.resultItem}>• 어깨: {analysisResult.shoulderWidth}</Text>
-              <Text style={styles.confidenceText}>신뢰도: {analysisResult.confidence}%</Text>
+              <View style={styles.resultHeader}>
+                <Text style={styles.resultTitle}>체형 분석 완료</Text>
+                <Text style={styles.confidenceText}>신뢰도 {analysisResult.confidence}%</Text>
+              </View>
+              <View style={styles.resultGrid}>
+                <View style={styles.resultItem}>
+                  <Text style={styles.resultLabel}>체형</Text>
+                  <Text style={styles.resultValue}>{analysisResult.bodyType}</Text>
+                </View>
+                <View style={styles.resultItem}>
+                  <Text style={styles.resultLabel}>키</Text>
+                  <Text style={styles.resultValue}>{analysisResult.height}</Text>
+                </View>
+                <View style={styles.resultItem}>
+                  <Text style={styles.resultLabel}>어깨</Text>
+                  <Text style={styles.resultValue}>{analysisResult.shoulderWidth}</Text>
+                </View>
+              </View>
             </View>
           </View>
         )}
@@ -181,14 +347,17 @@ function BodyTypeScreen({ navigation }) {
         {/* 추천 상품 */}
         {recommendations.length > 0 && (
           <View style={styles.recommendationsSection}>
-            <Text style={styles.sectionTitle}>맞춤 추천 상품</Text>
+            <Text style={styles.sectionTitle}>✨ {analysisResult.bodyType} 체형 맞춤 추천</Text>
+            <Text style={styles.recommendationSubtitle}>
+              AI가 분석한 당신의 체형에 가장 잘 어울리는 상품들입니다
+            </Text>
             {recommendations.map(renderRecommendation)}
           </View>
         )}
       </ScrollView>
 
       {/* 하단 네비게이션 버튼들 */}
-     
+      
     </SafeAreaView>
   );
 }
@@ -228,13 +397,23 @@ const styles = StyleSheet.create({
   uploadSection: {
     padding: 20,
     alignItems: 'center',
+    backgroundColor: '#FAFAFA',
+    margin: 15,
+    borderRadius: 15,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 20,
   },
   uploadButton: {
     backgroundColor: '#4A90E2',
@@ -242,6 +421,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 25,
     marginBottom: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   uploadButtonText: {
     color: '#FFFFFF',
@@ -257,22 +441,37 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 10,
   },
+  imageFrame: {
+    padding: 5,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
   imagePreview: {
     width: 200,
     height: 300,
     borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
   },
   analyzeSection: {
     paddingHorizontal: 20,
     marginBottom: 20,
+    alignItems: 'center',
   },
   analyzeButton: {
     backgroundColor: '#FF6B6B',
     paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 25,
     alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   analyzeButtonDisabled: {
     backgroundColor: '#CCCCCC',
@@ -287,6 +486,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 5,
   },
+  analysisInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+  },
   resultSection: {
     padding: 20,
   },
@@ -297,39 +502,66 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E9ECEF',
   },
+  resultHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
   resultTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
-  },
-  resultItem: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
   },
   confidenceText: {
     fontSize: 12,
     color: '#4A90E2',
-    marginTop: 10,
     fontWeight: 'bold',
+    backgroundColor: '#E3F2FD',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  resultGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  resultItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  resultLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  resultValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
   },
   recommendationsSection: {
     padding: 20,
   },
+  recommendationSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   recommendationCard: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#E9ECEF',
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
   },
   recommendationImage: {
     width: 80,
@@ -341,6 +573,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  brandText: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 2,
+    fontWeight: '500',
+  },
   recommendationName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -351,9 +589,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 8,
+    lineHeight: 18,
   },
   recommendationPrice: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FF6B6B',
   },
