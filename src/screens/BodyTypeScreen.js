@@ -12,6 +12,15 @@ import {
 } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
+const images = {
+  Overfit: require('../assets/images/AI_Overfit_Hood.jpeg'),
+  Slim1: require('../assets/images/AI_slim1.jpeg'),
+  AI_V: require('../assets/images/AI_V.jpeg'),
+};
+
+console.log('Images 로드 확인:', images); //디버깅
+
+
 function BodyTypeScreen({ navigation }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -98,7 +107,7 @@ function BodyTypeScreen({ navigation }) {
       // 랜덤 분석 결과 생성 (더 현실적)
       const bodyTypes = ['슬림', '보통', '통통', '운동체형'];
       const heights = ['작음', '보통', '큼'];
-      const shoulders = ['좁음', '보통', '넓음'];
+      const shoulders = ['작음', '보통', '큼'];
       
       const randomBodyType = bodyTypes[Math.floor(Math.random() * bodyTypes.length)];
       const randomHeight = heights[Math.floor(Math.random() * heights.length)];
@@ -119,7 +128,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: '오버핏 후드',
               reason: '볼륨감을 주어 균형잡힌 실루엣',
-              image: 'https://via.placeholder.com/150x200/FF6B6B/ffffff?text=Oversized+Hood',
+              image: images.Overfit,
               price: '89,000원',
               brand: 'MUSINSA'
             },
@@ -145,7 +154,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: '슬림핏 니트',
               reason: '표준 체형에 가장 잘 어울리는 핏',
-              image: 'https://via.placeholder.com/150x200/9B59B6/ffffff?text=Slim+Knit',
+              image: images.slim1,
               price: '79,000원',
               brand: 'UNIQLO'
             },
@@ -171,7 +180,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: 'V넥 가디건',
               reason: 'V라인으로 상체를 슬림하게',
-              image: 'https://via.placeholder.com/150x200/2C3E50/ffffff?text=V-neck+Cardigan',
+              image: images.AI_V,
               price: '119,000원',
               brand: 'COS'
             },
@@ -245,7 +254,7 @@ function BodyTypeScreen({ navigation }) {
 
   const renderRecommendation = (item) => (
     <TouchableOpacity key={item.id} style={styles.recommendationCard}>
-      <Image source={{ uri: item.image }} style={styles.recommendationImage} />
+     <Image source={item.image} style={styles.recommendationImage}/>
       <View style={styles.recommendationInfo}>
         <Text style={styles.brandText}>{item.brand}</Text>
         <Text style={styles.recommendationName}>{item.name}</Text>
@@ -332,11 +341,11 @@ function BodyTypeScreen({ navigation }) {
                   <Text style={styles.resultValue}>{analysisResult.bodyType}</Text>
                 </View>
                 <View style={styles.resultItem}>
-                  <Text style={styles.resultLabel}>키</Text>
+                  <Text style={styles.resultLabel}>상체</Text>
                   <Text style={styles.resultValue}>{analysisResult.height}</Text>
                 </View>
                 <View style={styles.resultItem}>
-                  <Text style={styles.resultLabel}>어깨</Text>
+                  <Text style={styles.resultLabel}>하체</Text>
                   <Text style={styles.resultValue}>{analysisResult.shoulderWidth}</Text>
                 </View>
               </View>
@@ -356,8 +365,6 @@ function BodyTypeScreen({ navigation }) {
         )}
       </ScrollView>
 
-      {/* 하단 네비게이션 버튼들 */}
-      
     </SafeAreaView>
   );
 }
