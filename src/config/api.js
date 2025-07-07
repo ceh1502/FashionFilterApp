@@ -4,13 +4,13 @@
 export const API_CONFIG = {
   // Google Cloud Vision API
   GOOGLE_CLOUD: {
-    API_KEY: 'AIzaSyBbJOeiX8B5X3d4M1zblq8H6i0v6gyV40I', // <-- your real key
+    API_KEY: 'AI', // <-- your real key
     VISION_ENDPOINT: 'https://vision.googleapis.com/v1/images:annotate',
   },
   
   // OpenAI GPT API
   OPENAI: {
-    API_KEY: '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', // <-- your real key
+    API_KEY: 'sk-..A', // <-- your real key
     ENDPOINT: 'https://api.openai.com/v1/chat/completions',
     MODEL: 'gpt-3.5-turbo',
   },
