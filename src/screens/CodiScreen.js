@@ -20,6 +20,18 @@ const imageMap = {
   "btm_4.webp": require('../assets/images/btm_4.webp'),
   "shoe_1.webp": require('../assets/images/shoe_1.webp'),
   "shoe_2.webp": require('../assets/images/shoe_2.webp'),
+  "AI_Classic_Rop.jpeg": require('../assets/images/AI_Classic_Rop.jpeg'),
+  "AI_Dark_Jeans.jpeg": require('../assets/images/AI_Dark_Jeans.jpeg'),
+  "AI_Fit_T.jpeg": require('../assets/images/AI_Fit_T.jpeg'),
+  "AI_Overfit_Hood.jpeg": require('../assets/images/Overfit_Hood.jpeg'),
+  "AI_Running_Sneakers.jpeg": require('../assets/images/AI_Running_Sneakers.jpeg'),
+  "AI_Slim_Boots.jpeg": require('../assets/images/AI_Slim_Boots.jpeg'),
+  "AI_slim1.jpeg": require('../assets/images/AI_slim1.jpeg'),
+  "AI_Sneakers.jpeg": require('../assets/images/AI_Sneakers.jpeg'),
+  "AI_Straight_Jeans.jpeg": require('../assets/images/AI_Straight_Jeans.jpeg'),
+  "AI_Tai_Pants.jpeg": require('../assets/images/AI_Tai_Pants.jpeg'),
+  "AI_V.jpeg": require('../assets/images/AI_V.jpeg'),
+  "AI_Wide_Kago.jpeg": require('../assets/images/AI_Wide_Kago.jpeg'),
 };
 
 function CodiScreen({ navigation }) {
