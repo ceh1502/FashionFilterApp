@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import products from '../data/products.json';
 
@@ -24,6 +24,8 @@ const imageMap = {
 function CodiScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState('상의');
   const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = product.category === selectedCategory;
@@ -32,7 +34,13 @@ function CodiScreen({ navigation }) {
   });
 
   const handleProductPress = (product) => {
-    console.log('상품 클릭:', product);
+    setSelectedProduct(product);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null);
   };
 
   const renderProduct = (product) => (
@@ -91,6 +99,7 @@ function CodiScreen({ navigation }) {
             { name: '검정', color: '#000000' },
             { name: '흰색', color: '#FFFFFF' },
             { name: '베이지', color: '#F5F5DC' },
+            { name: '네이비', color: '#000080' },
             { name: '핑크', color: '#FFC0CB' },
           ].map((colorItem) => (
             <TouchableOpacity
@@ -128,6 +137,42 @@ function CodiScreen({ navigation }) {
           {filteredProducts.map(renderProduct)}
         </View>
       </ScrollView>
+
+      {/* Product Detail Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={codiStyles.modalOverlay}>
+          <View style={codiStyles.modalContent}>
+            <TouchableOpacity style={codiStyles.closeButton} onPress={closeModal}>
+              <Ionicons name="close" size={24} color="#333" />
+            </TouchableOpacity>
+            
+            {selectedProduct && (
+              <>
+                <Image 
+                  source={imageMap[selectedProduct.image]} 
+                  style={codiStyles.modalImage} 
+                />
+                <View style={codiStyles.modalInfo}>
+                  <Text style={codiStyles.modalBrand}>{selectedProduct.brand}</Text>
+                  <Text style={codiStyles.modalName}>{selectedProduct.name}</Text>
+                  <Text style={codiStyles.modalCategory}>{selectedProduct.category}</Text>
+                  <Text style={codiStyles.modalColor}>색상: {selectedProduct.color}</Text>
+                  <Text style={codiStyles.modalPrice}>{selectedProduct.price}</Text>
+                </View>
+                
+                <TouchableOpacity style={codiStyles.addToCartButton}>
+                  <Text style={codiStyles.addToCartText}>장바구니에 추가</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -206,6 +251,11 @@ const codiStyles = StyleSheet.create({
     marginRight: 10,
     borderWidth: 2,
     borderColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1.0,
+    shadowRadius: 6,
+    elevation: 8,
   },
   whiteColorBorder: {
     borderColor: '#ddd',
@@ -287,7 +337,77 @@ const codiStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    margin: 20,
+    width: '90%',
+    maxWidth: 400,
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    zIndex: 1,
+    padding: 5,
+  },
+  modalImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  modalInfo: {
+    marginBottom: 20,
+  },
+  modalBrand: {
+    fontSize: 14,
+    color: '#999',
+    marginBottom: 5,
+  },
+  modalName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  modalCategory: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  modalColor: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  modalPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+    marginTop: 5,
+  },
+  addToCartButton: {
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  addToCartText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
 
 export default CodiScreen;
