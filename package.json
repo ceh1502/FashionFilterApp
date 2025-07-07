@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-native": "^0.80.1",
+    "react-native-document-picker": "^9.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/runtime": "^7.27.6",
+    "@react-native-community/cli": "^18.0.0",
+    "@react-native/babel-preset": "^0.80.1",
+    "@react-native/metro-config": "^0.80.1",
+    "metro-react-native-babel-preset": "^0.77.0"
+  }
+
+  
+}
