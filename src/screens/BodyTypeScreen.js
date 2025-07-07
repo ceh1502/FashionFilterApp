@@ -15,7 +15,18 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 const images = {
   Overfit: require('../assets/images/AI_Overfit_Hood.jpeg'),
   Slim1: require('../assets/images/AI_slim1.jpeg'),
-  AI_V: require('../assets/images/AI_V.jpeg'),
+  V: require('../assets/images/AI_V.jpeg'),
+  Wide_Kago: require('../assets/images/AI_Wide_Kago.jpeg'),
+  Sneakers: require('../assets/images/AI_Sneakers.jpeg'),
+  S_Jeans: require('../assets/images/AI_Straight_Jeans.jpeg'),
+  C_Rop: require('../assets/images/AI_Classic_Rop.jpeg'),
+  Dark_Jeans: require('../assets/images/AI_Dark_Jeans.jpeg'),
+  Slim_Boots: require('../assets/images/AI_Slim_Boots.jpeg'),
+  Fit_T: require('../assets/images/AI_Fit_T.jpeg'),
+  Tai_Pants: require('../assets/images/AI_Tai_Pants.jpeg'),
+  Running_Sneakers: require('../assets/images/AI_Running_Sneakers2.jpeg'),
+  Sneakers: require('../assets/images/AI_Sneakers.jpeg'),
+  Sneakers: require('../assets/images/AI_Sneakers.jpeg'),
 };
 
 console.log('Images 로드 확인:', images); //디버깅
@@ -136,7 +147,7 @@ function BodyTypeScreen({ navigation }) {
               id: 2,
               name: '와이드 카고팬츠',
               reason: '하체 볼륨으로 전체적인 균형',
-              image: 'https://via.placeholder.com/150x200/4A90E2/ffffff?text=Wide+Cargo',
+              image: images.Wide_Kago,
               price: '129,000원',
               brand: 'ADLV'
             },
@@ -144,7 +155,7 @@ function BodyTypeScreen({ navigation }) {
               id: 3,
               name: '청키 스니커즈',
               reason: '발목 볼륨으로 하체 보완',
-              image: 'https://via.placeholder.com/150x200/50C878/ffffff?text=Chunky+Sneakers',
+              image: images.Sneakers,
               price: '159,000원',
               brand: 'NIKE'
             }
@@ -154,7 +165,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: '슬림핏 니트',
               reason: '표준 체형에 가장 잘 어울리는 핏',
-              image: images.slim1,
+              image: images.Slim1,
               price: '79,000원',
               brand: 'UNIQLO'
             },
@@ -162,7 +173,7 @@ function BodyTypeScreen({ navigation }) {
               id: 2,
               name: '스트레이트 진',
               reason: '깔끔하고 세련된 하체 라인',
-              image: 'https://via.placeholder.com/150x200/34495E/ffffff?text=Straight+Jeans',
+              image: images.S_Jeans,
               price: '98,000원',
               brand: 'LEVI\'S'
             },
@@ -170,7 +181,7 @@ function BodyTypeScreen({ navigation }) {
               id: 3,
               name: '클래식 로퍼',
               reason: '어떤 스타일에도 매치 가능',
-              image: 'https://via.placeholder.com/150x200/8B4513/ffffff?text=Classic+Loafer',
+              image: images.C_Rop,
               price: '189,000원',
               brand: 'CLARKS'
             }
@@ -180,7 +191,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: 'V넥 가디건',
               reason: 'V라인으로 상체를 슬림하게',
-              image: images.AI_V,
+              image: images.V,
               price: '119,000원',
               brand: 'COS'
             },
@@ -188,7 +199,7 @@ function BodyTypeScreen({ navigation }) {
               id: 2,
               name: '다크 스키니진',
               reason: '어두운 색상으로 하체 슬림 효과',
-              image: 'https://via.placeholder.com/150x200/1A1A1A/ffffff?text=Dark+Skinny',
+              image: images.Dark_Jeans,
               price: '89,000원',
               brand: 'ZARA'
             },
@@ -196,7 +207,7 @@ function BodyTypeScreen({ navigation }) {
               id: 3,
               name: '슬림 첼시부츠',
               reason: '발목 라인을 깔끔하게',
-              image: 'https://via.placeholder.com/150x200/654321/ffffff?text=Chelsea+Boots',
+              image: images.Slim_Boots,
               price: '229,000원',
               brand: 'DR.MARTENS'
             }
@@ -206,7 +217,7 @@ function BodyTypeScreen({ navigation }) {
               id: 1,
               name: '피팅 티셔츠',
               reason: '운동으로 다져진 체형을 살리는 핏',
-              image: 'https://via.placeholder.com/150x200/E74C3C/ffffff?text=Fitted+Tee',
+              image: images.Fit_T,
               price: '45,000원',
               brand: 'UNDER ARMOUR'
             },
@@ -214,7 +225,7 @@ function BodyTypeScreen({ navigation }) {
               id: 2,
               name: '테이퍼드 팬츠',
               reason: '상체와 하체의 균형을 맞추는 실루엣',
-              image: 'https://via.placeholder.com/150x200/27AE60/ffffff?text=Tapered+Pants',
+              image: images.Tai_Pants,
               price: '139,000원',
               brand: 'STONE ISLAND'
             },
@@ -222,7 +233,7 @@ function BodyTypeScreen({ navigation }) {
               id: 3,
               name: '러닝 스니커즈',
               reason: '활동적인 이미지와 잘 어울림',
-              image: 'https://via.placeholder.com/150x200/F39C12/ffffff?text=Running+Shoes',
+              image: images.Running_Sneakers,
               price: '179,000원',
               brand: 'ADIDAS'
             }
@@ -254,7 +265,11 @@ function BodyTypeScreen({ navigation }) {
 
   const renderRecommendation = (item) => (
     <TouchableOpacity key={item.id} style={styles.recommendationCard}>
-     <Image source={item.image} style={styles.recommendationImage}/>
+      <Image 
+        source={typeof item.image === 'string' ? {uri: item.image} : item.image}
+        style={styles.recommendationImage}
+        onError={(error) => console.log('이미지 에러:', item.name)}
+      />
       <View style={styles.recommendationInfo}>
         <Text style={styles.brandText}>{item.brand}</Text>
         <Text style={styles.recommendationName}>{item.name}</Text>
