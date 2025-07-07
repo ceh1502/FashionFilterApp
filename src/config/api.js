@@ -4,27 +4,27 @@
 export const API_CONFIG = {
   // Google Cloud Vision API
   GOOGLE_CLOUD: {
-    API_KEY: process.env.GOOGLE_CLOUD_API_KEY || 'YOUR_GOOGLE_CLOUD_API_KEY',
+    API_KEY: 'AIzaSyBbJOeiX8B5X3d4M1zblq8H6i0v6gyV40I', // <-- your real key
     VISION_ENDPOINT: 'https://vision.googleapis.com/v1/images:annotate',
   },
   
   // OpenAI GPT API
   OPENAI: {
-    API_KEY: process.env.OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY',
+    API_KEY: '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', // <-- your real key
     ENDPOINT: 'https://api.openai.com/v1/chat/completions',
     MODEL: 'gpt-3.5-turbo',
   },
   
-  // Azure Computer Vision (대안)
-  AZURE: {
-    API_KEY: process.env.AZURE_VISION_API_KEY || 'YOUR_AZURE_API_KEY',
-    ENDPOINT: process.env.AZURE_VISION_ENDPOINT || 'YOUR_AZURE_ENDPOINT',
-  },
+  // // Azure Computer Vision (대안)
+  // AZURE: {
+  //   API_KEY: process.env.AZURE_VISION_API_KEY || 'YOUR_AZURE_API_KEY',
+  //   ENDPOINT: process.env.AZURE_VISION_ENDPOINT || 'YOUR_AZURE_ENDPOINT',
+  // },
   
-  // Clarifai (대안)
-  CLARIFAI: {
-    API_KEY: process.env.CLARIFAI_API_KEY || 'YOUR_CLARIFAI_API_KEY',
-  },
+//   // Clarifai (대안)
+//   CLARIFAI: {
+//     API_KEY: process.env.CLARIFAI_API_KEY || 'YOUR_CLARIFAI_API_KEY',
+//   },
 };
 
 // API 키 유효성 검사

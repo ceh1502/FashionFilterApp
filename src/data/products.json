@@ -125,4 +125,124 @@
     "price": "200,000KRW",
     "image": "shoe_2.webp"     
   }
+  ,
+  {
+    "id": 15,
+    "name": "오버핏 후드",
+    "brand": "무신사",
+    "category": "상의",
+    "color": "회색",
+    "price": "89,000KRW",
+    "image": "AI_Overfit_Hood.jpeg"     
+  }
+  ,
+  {
+    "id": 16,
+    "name": "와이드 카고팬츠",
+    "brand": "ADLV",
+    "category": "하의",
+    "color": "검정",
+    "price": "129,000KRW",
+    "image": "AI_Wide_Kago.jpeg"     
+  }
+  ,
+  {
+    "id": 17,
+    "name": "청키 스니커즈",
+    "brand": "나이키",
+    "category": "신발",
+    "color": "흰색",
+    "price": "159,000KRW",
+    "image": "AI_Sneakers.jpeg"     
+  }
+  ,
+  {
+    "id": 18,
+    "name": "슬림핏 니트",
+    "brand": "UNIQLO",
+    "category": "상의",
+    "color": "흰색",
+    "price": "79,000KRW",
+    "image": "AI_slim1.jpeg"     
+  }
+  ,
+  {
+    "id": 19,
+    "name": "스트레이트 진",
+    "brand": "LEVIS",
+    "category": "하의",
+    "color": "파란색",
+    "price": "98,000KRW",
+    "image": "AI_Straight_Jeans.jpeg"     
+  }
+  ,
+  {
+    "id": 20,
+    "name": "클래식 로퍼",
+    "brand": "CLARKS",
+    "category": "신발",
+    "color": "갈색",
+    "price": "189,000KRW",
+    "image": "AI_Classic_Rop.jpeg"     
+  }
+  ,
+  {
+    "id": 21,
+    "name": "V넥 가디건",
+    "brand": "COS",
+    "category": "상의",
+    "color": "파란색",
+    "price": "119,000KRW",
+    "image": "AI_V.jpeg"     
+  }
+  ,
+  {
+    "id": 22,
+    "name": "다크 스키니진",
+    "brand": "ZARA",
+    "category": "하의",
+    "color": "검정",
+    "price": "89,000KRW",
+    "image": "AI_Dark_Jeans.jpeg"     
+  }
+  ,
+  {
+    "id": 23,
+    "name": "슬림 첼시부츠",
+    "brand": "DR.MARTENS",
+    "category": "신발",
+    "color": "갈색",
+    "price": "229,000KRW",
+    "image": "AI_Slim_Boots.jpeg"     
+  }
+  ,
+  {
+    "id": 24,
+    "name": "피팅 티셔츠",
+    "brand": "UNDER ARMOUR",
+    "category": "상의",
+    "color": "파란색",
+    "price": "45,000KRW",
+    "image": "AI_Fit_T.jpeg"     
+  }
+  ,
+  {
+    "id": 25,
+    "name": "테이퍼드 팬츠",
+    "brand": "STONE ISLAND",
+    "category": "하의",
+    "color": "검정",
+    "price": "139,000KRW",
+    "image": "AI_Tai_Pants.jpeg"     
+  }
+  ,
+  {
+    "id": 26,
+    "name": "러닝 스니커즈",
+    "brand": "ADIDAS",
+    "category": "신발",
+    "color": "흰색",
+    "price": "179,000KRW",
+    "image": "AI_Running_Sneakers2.jpeg"     
+  }
 ]

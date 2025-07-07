@@ -86,31 +86,31 @@ class AIService {
         body: JSON.stringify(requestBody)
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = `Vision API error: ${response.status}`;
+      // if (!response.ok) {
+      //   const errorText = await response.text();
+      //   let errorMessage = `Vision API error: ${response.status}`;
         
-        // 400 에러에 대한 구체적인 메시지
-        if (response.status === 400) {
-          if (errorText.includes('API key')) {
-            errorMessage = 'Invalid API key. Please check your Google Cloud API key.';
-          } else if (errorText.includes('quota')) {
-            errorMessage = 'API quota exceeded. Please try again later.';
-          } else if (errorText.includes('image')) {
-            errorMessage = 'Invalid image format. Please select a different image.';
-          } else if (errorText.includes('size')) {
-            errorMessage = 'Image is too large. Please select a smaller image.';
-          } else {
-            errorMessage = 'Bad request. Please check your image and try again.';
-          }
-        } else if (response.status === 403) {
-          errorMessage = 'API access denied. Please check your API key and billing.';
-        } else if (response.status === 429) {
-          errorMessage = 'Too many requests. Please wait and try again.';
-        }
+      //   // 400 에러에 대한 구체적인 메시지
+      //   if (response.status === 400) {
+      //     if (errorText.includes('API key')) {
+      //       errorMessage = 'Invalid API key. Please check your Google Cloud API key.';
+      //     } else if (errorText.includes('quota')) {
+      //       errorMessage = 'API quota exceeded. Please try again later.';
+      //     } else if (errorText.includes('image')) {
+      //       errorMessage = 'Invalid image format. Please select a different image.';
+      //     } else if (errorText.includes('size')) {
+      //       errorMessage = 'Image is too large. Please select a smaller image.';
+      //     } else {
+      //       errorMessage = 'Bad request. Please check your image and try again.';
+      //     }
+      //   } else if (response.status === 403) {
+      //     errorMessage = 'API access denied. Please check your API key and billing.';
+      //   } else if (response.status === 429) {
+      //     errorMessage = 'Too many requests. Please wait and try again.';
+      //   }
         
-        throw new Error(errorMessage);
-      }
+      //   throw new Error(errorMessage);
+      // }
 
       return await response.json();
     } catch (error) {
@@ -175,25 +175,25 @@ class AIService {
     };
   }
 
-  // Azure Vision 결과 처리
-  processAzureVisionResults(visionResult) {
-    const tags = visionResult.tags || [];
-    const faces = visionResult.faces || [];
-    const description = visionResult.description || {};
+  // // Azure Vision 결과 처리
+  // processAzureVisionResults(visionResult) {
+  //   const tags = visionResult.tags || [];
+  //   const faces = visionResult.faces || [];
+  //   const description = visionResult.description || {};
 
-    const bodyType = this.analyzeBodyTypeFromAzureTags(tags);
-    const height = this.analyzeHeightFromAzureFaces(faces);
-    const shoulderWidth = this.analyzeShoulderWidthFromAzureFaces(faces);
-    const confidence = this.calculateAzureConfidence(tags, faces, description);
+  //   const bodyType = this.analyzeBodyTypeFromAzureTags(tags);
+  //   const height = this.analyzeHeightFromAzureFaces(faces);
+  //   const shoulderWidth = this.analyzeShoulderWidthFromAzureFaces(faces);
+  //   const confidence = this.calculateAzureConfidence(tags, faces, description);
 
-    return {
-      bodyType,
-      height,
-      shoulderWidth,
-      confidence,
-      rawData: { tags, faces, description }
-    };
-  }
+  //   return {
+  //     bodyType,
+  //     height,
+  //     shoulderWidth,
+  //     confidence,
+  //     rawData: { tags, faces, description }
+  //   };
+  // }
 
   // 라벨에서 체형 분석
   analyzeBodyTypeFromLabels(labels) {
@@ -211,79 +211,94 @@ class AIService {
   }
 
   // Azure 태그에서 체형 분석
-  analyzeBodyTypeFromAzureTags(tags) {
-    const tagNames = tags.map(tag => tag.name.toLowerCase());
+  // analyzeBodyTypeFromAzureTags(tags) {
+  //   const tagNames = tags.map(tag => tag.name.toLowerCase());
     
-    for (const [bodyType, keywords] of Object.entries(BODY_ANALYSIS_CONFIG.BODY_TYPE_KEYWORDS)) {
-      for (const keyword of keywords) {
-        if (tagNames.some(name => name.includes(keyword))) {
-          return bodyType;
-        }
-      }
-    }
+  //   for (const [bodyType, keywords] of Object.entries(BODY_ANALYSIS_CONFIG.BODY_TYPE_KEYWORDS)) {
+  //     for (const keyword of keywords) {
+  //       if (tagNames.some(name => name.includes(keyword))) {
+  //         return bodyType;
+  //       }
+  //     }
+  //   }
 
-    return '보통';
-  }
+  //   return '보통';
+  // }
 
   // 객체 위치에서 키 분석
   analyzeHeightFromObjects(objects) {
-    const personObjects = objects.filter(obj => obj.name === 'Person');
+    const personObjects = (objects || []).filter(obj => obj.name === 'Person');
     
     if (personObjects.length > 0) {
       const person = personObjects[0];
-      const height = person.boundingPoly.vertices[3].y - person.boundingPoly.vertices[0].y;
-      
-      if (height > BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.HEIGHT.LARGE) return '큼';
-      if (height < BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.HEIGHT.SMALL) return '작음';
-      return '보통';
+      if (
+        person.boundingPoly &&
+        Array.isArray(person.boundingPoly.vertices) &&
+        person.boundingPoly.vertices.length >= 4 &&
+        person.boundingPoly.vertices[0] &&
+        person.boundingPoly.vertices[3] &&
+        typeof person.boundingPoly.vertices[0].y === 'number' &&
+        typeof person.boundingPoly.vertices[3].y === 'number'
+      ) {
+        const height = person.boundingPoly.vertices[3].y - person.boundingPoly.vertices[0].y;
+        if (height > BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.HEIGHT.LARGE) return '큼';
+        if (height < BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.HEIGHT.SMALL) return '작음';
+        return '보통';
+      }
     }
-    
     return '보통';
   }
 
-  // Azure 얼굴에서 키 분석
-  analyzeHeightFromAzureFaces(faces) {
-    if (faces.length > 0) {
-      const face = faces[0];
-      const height = face.faceRectangle.height;
+  // // Azure 얼굴에서 키 분석
+  // analyzeHeightFromAzureFaces(faces) {
+  //   if (faces.length > 0) {
+  //     const face = faces[0];
+  //     const height = face.faceRectangle.height;
       
-      if (height > 150) return '큼';
-      if (height < 100) return '작음';
-      return '보통';
-    }
+  //     if (height > 150) return '큼';
+  //     if (height < 100) return '작음';
+  //     return '보통';
+  //   }
     
-    return '보통';
-  }
+  //   return '보통';
+  // }
 
   // 객체 위치에서 어깨 너비 분석
   analyzeShoulderWidthFromObjects(objects) {
-    const personObjects = objects.filter(obj => obj.name === 'Person');
-    
+    const personObjects = (objects || []).filter(obj => obj.name === 'Person');
     if (personObjects.length > 0) {
       const person = personObjects[0];
-      const width = person.boundingPoly.vertices[1].x - person.boundingPoly.vertices[0].x;
-      
-      if (width > BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.WIDTH.LARGE) return '큼';
-      if (width < BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.WIDTH.SMALL) return '작음';
-      return '보통';
+      if (
+        person.boundingPoly &&
+        Array.isArray(person.boundingPoly.vertices) &&
+        person.boundingPoly.vertices.length >= 2 &&
+        person.boundingPoly.vertices[0] &&
+        person.boundingPoly.vertices[1] &&
+        typeof person.boundingPoly.vertices[0].x === 'number' &&
+        typeof person.boundingPoly.vertices[1].x === 'number'
+      ) {
+        const width = person.boundingPoly.vertices[1].x - person.boundingPoly.vertices[0].x;
+        if (width > BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.WIDTH.LARGE) return '큼';
+        if (width < BODY_ANALYSIS_CONFIG.SIZE_THRESHOLDS.WIDTH.SMALL) return '작음';
+        return '보통';
+      }
     }
-    
     return '보통';
   }
 
   // Azure 얼굴에서 어깨 너비 분석
-  analyzeShoulderWidthFromAzureFaces(faces) {
-    if (faces.length > 0) {
-      const face = faces[0];
-      const width = face.faceRectangle.width;
+  // analyzeShoulderWidthFromAzureFaces(faces) {
+  //   if (faces.length > 0) {
+  //     const face = faces[0];
+  //     const width = face.faceRectangle.width;
       
-      if (width > 120) return '큼';
-      if (width < 80) return '작음';
-      return '보통';
-    }
+  //     if (width > 120) return '큼';
+  //     if (width < 80) return '작음';
+  //     return '보통';
+  //   }
     
-    return '보통';
-  }
+  //   return '보통';
+  // }
 
   // 신뢰도 계산 (Google)
   calculateConfidence(labels, faces, objects) {
@@ -310,27 +325,27 @@ class AIService {
   }
 
   // 신뢰도 계산 (Azure)
-  calculateAzureConfidence(tags, faces, description) {
-    let confidence = 50;
+  // calculateAzureConfidence(tags, faces, description) {
+  //   let confidence = 50;
     
-    // 태그 신뢰도
-    if (tags.length > 0) {
-      const avgTagConfidence = tags.reduce((sum, tag) => sum + tag.confidence, 0) / tags.length;
-      confidence += avgTagConfidence * BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.LABEL_DETECTION * 100;
-    }
+  //   // 태그 신뢰도
+  //   if (tags.length > 0) {
+  //     const avgTagConfidence = tags.reduce((sum, tag) => sum + tag.confidence, 0) / tags.length;
+  //     confidence += avgTagConfidence * BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.LABEL_DETECTION * 100;
+  //   }
     
-    // 얼굴 감지 신뢰도
-    if (faces.length > 0) {
-      confidence += BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.FACE_DETECTION * 100;
-    }
+  //   // 얼굴 감지 신뢰도
+  //   if (faces.length > 0) {
+  //     confidence += BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.FACE_DETECTION * 100;
+  //   }
     
-    // 설명 신뢰도
-    if (description.captions && description.captions.length > 0) {
-      confidence += BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.OBJECT_LOCALIZATION * 100;
-    }
+  //   // 설명 신뢰도
+  //   if (description.captions && description.captions.length > 0) {
+  //     confidence += BODY_ANALYSIS_CONFIG.CONFIDENCE_WEIGHTS.OBJECT_LOCALIZATION * 100;
+  //   }
     
-    return Math.min(Math.round(confidence), 99);
-  }
+  //   return Math.min(Math.round(confidence), 99);
+  // }
 
   // OpenAI GPT API 호출
   async callOpenAIRecommendationAPI(analysisResult) {
