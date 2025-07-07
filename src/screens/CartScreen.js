@@ -138,6 +138,9 @@ function CartScreen({ navigation }) {
   return (
     <SafeAreaView style={cartStyles.container}>
       <View style={cartStyles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
+          <Text style={cartStyles.headerCenter}>뮤신샤</Text>
+        </TouchableOpacity>
         <Text style={cartStyles.headerTitle}>장바구니</Text>
         <Text style={cartStyles.itemCount}>{getTotalItems()}개 상품</Text>
       </View>
@@ -187,14 +190,22 @@ const cartStyles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#000000',
   },
+  headerCenter: {
+    color: '#FFFFFF',
+    fontSize: 14,
+//    fontWeight: 'bold',
+    marginTop: 10,
+  },
   headerTitle: {
     color: '#FFFFFF',
     fontSize: 17,
     fontWeight: 'bold',
+    marginTop: 10,
   },
   itemCount: {
     color: '#FFFFFF',
     fontSize: 14,
+    marginTop: 10,
   },
   emptyCart: {
     flex: 1,

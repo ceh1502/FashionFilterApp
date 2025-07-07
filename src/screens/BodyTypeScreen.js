@@ -11,6 +11,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import aiService from '../services/aiService';
+import { ERROR_MESSAGES, validateAPIKeys } from '../config/api';
+import { runFullDebug } from '../utils/debugAI';
 
 const images = {
   Overfit: require('../assets/images/AI_Overfit_Hood.jpeg'),
@@ -102,165 +105,209 @@ function BodyTypeScreen({ navigation }) {
     });
   };
 
-  // AI 분석 함수 (개선된 버전)
+  // 디버깅 함수 추가
+  const debugAI = async () => {
+    console.log('🔍 Starting AI Debug...');
+    const results = await runFullDebug();
+    
+    Alert.alert(
+      'AI Debug Results',
+      `API Keys: ${results.apiKeysValid ? '✅ Valid' : '❌ Invalid'}\nVision API: ${results.visionAPIWorking ? '✅ Working' : '❌ Failed'}\n\nCheck console for detailed information.`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  // AI 분석 함수 (실제 AI API 사용)
   const analyzeImage = async () => {
     if (!selectedImage) {
       Alert.alert('알림', '먼저 사진을 업로드해주세요.');
       return;
     }
 
+    // API 키 유효성 검사
+    const apiValidation = validateAPIKeys();
+    if (!apiValidation.isValid) {
+      Alert.alert(
+        'API 설정 오류',
+        'API 키가 설정되지 않았습니다.\n\n' + apiValidation.errors.join('\n'),
+        [
+          { text: '디버그 실행', onPress: debugAI },
+          { text: '취소', style: 'cancel' }
+        ]
+      );
+      return;
+    }
+
     setIsAnalyzing(true);
 
     try {
-      // 실제 분석 시뮬레이션 (3초)
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // 랜덤 분석 결과 생성 (더 현실적)
-      const bodyTypes = ['슬림', '보통', '통통', '운동체형'];
-      const heights = ['작음', '보통', '큼'];
-      const shoulders = ['작음', '보통', '큼'];
-      
-      const randomBodyType = bodyTypes[Math.floor(Math.random() * bodyTypes.length)];
-      const randomHeight = heights[Math.floor(Math.random() * heights.length)];
-      const randomShoulder = shoulders[Math.floor(Math.random() * shoulders.length)];
-      
-      const mockAnalysisResult = {
-        bodyType: randomBodyType,
-        height: randomHeight,
-        shoulderWidth: randomShoulder,
-        confidence: Math.floor(Math.random() * 20) + 80, // 80-99%
-      };
+      // AI 서비스를 사용한 실제 분석
+      const analysisResult = await aiService.retryRequest(async () => {
+        const base64Image = await aiService.convertImageToBase64(selectedImage.uri);
+        const visionResult = await aiService.callGoogleVisionAPI(base64Image);
+        return aiService.processVisionResults(visionResult, 'google');
+      });
 
-      // 체형별 맞춤 추천
-      const getRecommendationsByBodyType = (bodyType) => {
-        const recommendations = {
-          '슬림': [
-            {
-              id: 1,
-              name: '오버핏 후드',
-              reason: '볼륨감을 주어 균형잡힌 실루엣',
-              image: images.Overfit,
-              price: '89,000원',
-              brand: 'MUSINSA'
-            },
-            {
-              id: 2,
-              name: '와이드 카고팬츠',
-              reason: '하체 볼륨으로 전체적인 균형',
-              image: images.Wide_Kago,
-              price: '129,000원',
-              brand: 'ADLV'
-            },
-            {
-              id: 3,
-              name: '청키 스니커즈',
-              reason: '발목 볼륨으로 하체 보완',
-              image: images.Sneakers,
-              price: '159,000원',
-              brand: 'NIKE'
-            }
-          ],
-          '보통': [
-            {
-              id: 1,
-              name: '슬림핏 니트',
-              reason: '표준 체형에 가장 잘 어울리는 핏',
-              image: images.Slim1,
-              price: '79,000원',
-              brand: 'UNIQLO'
-            },
-            {
-              id: 2,
-              name: '스트레이트 진',
-              reason: '깔끔하고 세련된 하체 라인',
-              image: images.S_Jeans,
-              price: '98,000원',
-              brand: 'LEVI\'S'
-            },
-            {
-              id: 3,
-              name: '클래식 로퍼',
-              reason: '어떤 스타일에도 매치 가능',
-              image: images.C_Rop,
-              price: '189,000원',
-              brand: 'CLARKS'
-            }
-          ],
-          '통통': [
-            {
-              id: 1,
-              name: 'V넥 가디건',
-              reason: 'V라인으로 상체를 슬림하게',
-              image: images.V,
-              price: '119,000원',
-              brand: 'COS'
-            },
-            {
-              id: 2,
-              name: '다크 스키니진',
-              reason: '어두운 색상으로 하체 슬림 효과',
-              image: images.Dark_Jeans,
-              price: '89,000원',
-              brand: 'ZARA'
-            },
-            {
-              id: 3,
-              name: '슬림 첼시부츠',
-              reason: '발목 라인을 깔끔하게',
-              image: images.Slim_Boots,
-              price: '229,000원',
-              brand: 'DR.MARTENS'
-            }
-          ],
-          '운동체형': [
-            {
-              id: 1,
-              name: '피팅 티셔츠',
-              reason: '운동으로 다져진 체형을 살리는 핏',
-              image: images.Fit_T,
-              price: '45,000원',
-              brand: 'UNDER ARMOUR'
-            },
-            {
-              id: 2,
-              name: '테이퍼드 팬츠',
-              reason: '상체와 하체의 균형을 맞추는 실루엣',
-              image: images.Tai_Pants,
-              price: '139,000원',
-              brand: 'STONE ISLAND'
-            },
-            {
-              id: 3,
-              name: '러닝 스니커즈',
-              reason: '활동적인 이미지와 잘 어울림',
-              image: images.Running_Sneakers,
-              price: '179,000원',
-              brand: 'ADIDAS'
-            }
-          ]
-        };
-        
-        return recommendations[bodyType] || recommendations['보통'];
-      };
+      // AI 추천 시스템
+      const recommendations = await aiService.retryRequest(async () => {
+        try {
+          const aiRecommendations = await aiService.callOpenAIRecommendationAPI(analysisResult);
+          return aiService.transformRecommendations(aiRecommendations);
+        } catch (error) {
+          console.warn('AI 추천 실패, 기본 추천 사용:', error);
+          return getRecommendationsByBodyType(analysisResult.bodyType);
+        }
+      });
 
-      const mockRecommendations = getRecommendationsByBodyType(randomBodyType);
-
-      setAnalysisResult(mockAnalysisResult);
-      setRecommendations(mockRecommendations);
+      setAnalysisResult(analysisResult);
+      setRecommendations(recommendations);
       setIsAnalyzing(false);
 
       // 분석 완료 알림
       Alert.alert(
         '분석 완료! 🎉',
-        `${randomBodyType} 체형으로 분석되었습니다.\n맞춤 상품을 확인해보세요!`,
+        `${analysisResult.bodyType} 체형으로 분석되었습니다.\n맞춤 상품을 확인해보세요!`,
         [{ text: '확인' }]
       );
 
     } catch (error) {
       console.error('Analysis error:', error);
-      Alert.alert('오류', '분석 중 오류가 발생했습니다.');
+      
+      // 에러 타입에 따른 구체적인 메시지
+      let errorMessage = ERROR_MESSAGES.ANALYSIS_FAILED;
+      
+      if (error.message.includes('API key')) {
+        errorMessage = ERROR_MESSAGES.INVALID_API_KEY;
+      } else if (error.message.includes('quota')) {
+        errorMessage = ERROR_MESSAGES.QUOTA_EXCEEDED;
+      } else if (error.message.includes('image')) {
+        errorMessage = ERROR_MESSAGES.INVALID_IMAGE;
+      } else if (error.message.includes('Bad request')) {
+        errorMessage = ERROR_MESSAGES.INVALID_REQUEST;
+      }
+      
+      Alert.alert(
+        '분석 실패',
+        errorMessage + '\n\n' + error.message,
+        [
+          { text: '디버그 실행', onPress: debugAI },
+          { text: '확인' }
+        ]
+      );
       setIsAnalyzing(false);
     }
+  };
+
+  // 기본 추천 시스템 (AI 실패시 사용)
+  const getRecommendationsByBodyType = (bodyType) => {
+    const recommendations = {
+      '슬림': [
+        {
+          id: 1,
+          name: '오버핏 후드',
+          reason: '볼륨감을 주어 균형잡힌 실루엣',
+          image: images.Overfit,
+          price: '89,000원',
+          brand: 'MUSINSA'
+        },
+        {
+          id: 2,
+          name: '와이드 카고팬츠',
+          reason: '하체 볼륨으로 전체적인 균형',
+          image: images.Wide_Kago,
+          price: '129,000원',
+          brand: 'ADLV'
+        },
+        {
+          id: 3,
+          name: '청키 스니커즈',
+          reason: '발목 볼륨으로 하체 보완',
+          image: images.Sneakers,
+          price: '159,000원',
+          brand: 'NIKE'
+        }
+      ],
+      '보통': [
+        {
+          id: 1,
+          name: '슬림핏 니트',
+          reason: '표준 체형에 가장 잘 어울리는 핏',
+          image: images.Slim1,
+          price: '79,000원',
+          brand: 'UNIQLO'
+        },
+        {
+          id: 2,
+          name: '스트레이트 진',
+          reason: '깔끔하고 세련된 하체 라인',
+          image: images.S_Jeans,
+          price: '98,000원',
+          brand: 'LEVI\'S'
+        },
+        {
+          id: 3,
+          name: '클래식 로퍼',
+          reason: '어떤 스타일에도 매치 가능',
+          image: images.C_Rop,
+          price: '189,000원',
+          brand: 'CLARKS'
+        }
+      ],
+      '통통': [
+        {
+          id: 1,
+          name: 'V넥 가디건',
+          reason: 'V라인으로 상체를 슬림하게',
+          image: images.V,
+          price: '119,000원',
+          brand: 'COS'
+        },
+        {
+          id: 2,
+          name: '다크 스키니진',
+          reason: '어두운 색상으로 하체 슬림 효과',
+          image: images.Dark_Jeans,
+          price: '89,000원',
+          brand: 'ZARA'
+        },
+        {
+          id: 3,
+          name: '슬림 첼시부츠',
+          reason: '발목 라인을 깔끔하게',
+          image: images.Slim_Boots,
+          price: '229,000원',
+          brand: 'DR.MARTENS'
+        }
+      ],
+      '운동체형': [
+        {
+          id: 1,
+          name: '피팅 티셔츠',
+          reason: '운동으로 다져진 체형을 살리는 핏',
+          image: images.Fit_T,
+          price: '45,000원',
+          brand: 'UNDER ARMOUR'
+        },
+        {
+          id: 2,
+          name: '테이퍼드 팬츠',
+          reason: '상체와 하체의 균형을 맞추는 실루엣',
+          image: images.Tai_Pants,
+          price: '139,000원',
+          brand: 'STONE ISLAND'
+        },
+        {
+          id: 3,
+          name: '러닝 스니커즈',
+          reason: '활동적인 이미지와 잘 어울림',
+          image: images.Running_Sneakers,
+          price: '179,000원',
+          brand: 'ADIDAS'
+        }
+      ]
+    };
+    
+    return recommendations[bodyType] || recommendations['보통'];
   };
 
   const renderRecommendation = (item) => (
@@ -283,12 +330,6 @@ function BodyTypeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>AI 체형 분석</Text>
       </View>
 
@@ -412,6 +453,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    marginTop: 10,
   },
   scrollView: {
     flex: 1,
