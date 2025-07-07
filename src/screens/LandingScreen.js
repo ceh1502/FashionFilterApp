@@ -55,8 +55,8 @@ function LandingScreen({navigation}){
         navigation.navigate('MainTabs', { screen: 'Codi' });
       } else if (buttonType === '체형 맞춤') {
         navigation.navigate('MainTabs', { screen: 'BodyType' });
-      } else if (buttonType === '취향 분석') {
-        navigation.navigate('MainTabs', { screen: 'Question' });
+      } else if (buttonType === '장바구니') {
+        navigation.navigate('MainTabs', { screen: 'Cart' });
       }
     }
   };
@@ -109,11 +109,11 @@ function LandingScreen({navigation}){
 
           <TouchableOpacity 
             style={[styles.actionButton, styles.tertiaryButton]}
-            onPress={() => handleButtonPress('취향 분석')}
+            onPress={() => handleButtonPress('장바구니')}
             activeOpacity={0.8}
           >
-            <Text style={styles.tertiaryButtonText}>취향 분석</Text>
-            <Text style={styles.buttonSubText}>맞춤 추천</Text>
+            <Text style={styles.tertiaryButtonText}>장바구니</Text>
+            <Text style={styles.buttonSubText}>한 눈에 확인</Text>
           </TouchableOpacity>
         </View>
       </View>

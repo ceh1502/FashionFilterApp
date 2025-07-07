@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Modal, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import products from '../data/products.json';
 
@@ -26,6 +27,8 @@ function CodiScreen({ navigation }) {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = product.category === selectedCategory;
@@ -36,6 +39,68 @@ function CodiScreen({ navigation }) {
   const handleProductPress = (product) => {
     setSelectedProduct(product);
     setModalVisible(true);
+  };
+
+  // Load cart items when component mounts
+  useEffect(() => {
+    loadCartItems();
+  }, []);
+
+  const loadCartItems = async () => {
+    try {
+      const savedCart = await AsyncStorage.getItem('cart');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    }
+  };
+
+  const saveCartItems = async (newCart) => {
+    try {
+      await AsyncStorage.setItem('cart', JSON.stringify(newCart));
+    } catch (error) {
+      console.error('Error saving cart:', error);
+    }
+  };
+
+  const addToCart = async () => {
+    if (!selectedProduct) return;
+    
+    setIsAddingToCart(true);
+    
+    try {
+      // Check if product is already in cart
+      const existingItemIndex = cartItems.findIndex(item => item.id === selectedProduct.id);
+      
+      let newCart;
+      if (existingItemIndex >= 0) {
+        // Update quantity if product already exists
+        newCart = [...cartItems];
+        newCart[existingItemIndex].quantity += 1;
+      } else {
+        // Add new product to cart
+        newCart = [...cartItems, { ...selectedProduct, quantity: 1 }];
+      }
+      
+      setCartItems(newCart);
+      await saveCartItems(newCart);
+      
+      // Trigger navigation event to update cart count
+      navigation.setParams({ cartUpdated: Date.now() });
+      
+      Alert.alert(
+        '장바구니 추가 완료',
+        `${selectedProduct.name}이(가) 장바구니에 추가되었습니다.`,
+        [{ text: '확인', onPress: () => closeModal() }]
+      );
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      Alert.alert('오류', '장바구니에 추가하는 중 오류가 발생했습니다.');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const closeModal = () => {
@@ -165,8 +230,14 @@ function CodiScreen({ navigation }) {
                   <Text style={codiStyles.modalPrice}>{selectedProduct.price}</Text>
                 </View>
                 
-                <TouchableOpacity style={codiStyles.addToCartButton}>
-                  <Text style={codiStyles.addToCartText}>장바구니에 추가</Text>
+                <TouchableOpacity 
+                  style={codiStyles.addToCartButton}
+                  onPress={addToCart}
+                  disabled={isAddingToCart}
+                >
+                  <Text style={codiStyles.addToCartText}>
+                    {isAddingToCart ? '추가 중...' : '장바구니에 추가'}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
