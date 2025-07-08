@@ -4,27 +4,9 @@
 export const API_CONFIG = {
   // Google Cloud Vision API
   GOOGLE_CLOUD: {
-    API_KEY: 'AI', // <-- your real key
+    API_KEY: 'AIzaSyBbJOeiX8B5X3d4M1zblq8H6i0v6gyV40I', // <-- your real key
     VISION_ENDPOINT: 'https://vision.googleapis.com/v1/images:annotate',
   },
-  
-  // OpenAI GPT API
-  OPENAI: {
-    API_KEY: 'sk-..A', // <-- your real key
-    ENDPOINT: 'https://api.openai.com/v1/chat/completions',
-    MODEL: 'gpt-3.5-turbo',
-  },
-  
-  // // Azure Computer Vision (대안)
-  // AZURE: {
-  //   API_KEY: process.env.AZURE_VISION_API_KEY || 'YOUR_AZURE_API_KEY',
-  //   ENDPOINT: process.env.AZURE_VISION_ENDPOINT || 'YOUR_AZURE_ENDPOINT',
-  // },
-  
-//   // Clarifai (대안)
-//   CLARIFAI: {
-//     API_KEY: process.env.CLARIFAI_API_KEY || 'YOUR_CLARIFAI_API_KEY',
-//   },
 };
 
 // API 키 유효성 검사
@@ -68,10 +50,10 @@ export const ERROR_MESSAGES = {
 export const BODY_ANALYSIS_CONFIG = {
   // 체형 키워드 매핑
   BODY_TYPE_KEYWORDS: {
-    '슬림': ['slim', 'thin', 'slender', 'lean', 'skinny', 'petite'],
-    '보통': ['average', 'normal', 'medium', 'regular', 'standard'],
-    '통통': ['full', 'curvy', 'plus size', 'round', 'chubby', 'full-figured'],
-    '운동체형': ['athletic', 'muscular', 'fit', 'toned', 'sporty', 'athletic build']
+    '슬림': ['slim', 'thin', 'slender', 'lean', 'skinny', 'petite', 'small', 'tiny', 'mini', 'slim fit', 'bone', "Skull", "Mandible", "Clavicle", "Scapula", "Sternum", "Ribs", "Humerus", "Radius", "Ulna", "Carpals", "Metacarpals", "Phalanges", "Vertebrae", "Pelvis", "Femur", "Patella", "Tibia", "Fibula", "Tarsals", "Metatarsals"],
+    '보통': ['average', 'normal', 'medium', 'regular', 'standard', 'medium fit', 'balanced', 'average fit', 'balance'],
+    '통통': ['full', 'curvy', 'plus size', 'round', 'chubby', 'full-figured', 'plus size fit', 'fat', 'thick', 'belly', 'stomach fat', 'wide', "big", "large", "massive", "size", "full"],
+    '운동체형': ['athletic', 'muscular', 'fit', 'toned', 'sporty', 'athletic build', 'athletic fit', "muscle", "muscle fit", "Stomache muscle", "Stomache muscle fit", 'gym']
   },
   
   // 신뢰도 계산 가중치

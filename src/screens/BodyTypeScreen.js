@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,11 +9,16 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import aiService from '../services/aiService';
 import { ERROR_MESSAGES, validateAPIKeys } from '../config/api';
 import { runFullDebug } from '../utils/debugAI';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import products from '../data/products.json';
+import { useCart } from '../context/CartContext';
 
 const images = {
   Overfit: require('../assets/images/AI_Overfit_Hood.jpeg'),
@@ -34,12 +39,105 @@ const images = {
 
 console.log('Images 로드 확인:', images); //디버깅
 
+// Utility: Sleep function to delay execution
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Lockout state to prevent requests after 429 error
+let openAILockoutUntil = 0;
 
 function BodyTypeScreen({ navigation }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [lockoutActive, setLockoutActive] = useState(false);
+
+  const { addToCart: addToCartContext } = useCart();
+
+  // Load cart items when component mounts
+  useEffect(() => {
+    // loadCartItems(); // Removed local cart loading
+  }, []);
+
+  // const loadCartItems = async () => {
+  //   try {
+  //     const savedCart = await AsyncStorage.getItem('cart');
+  //     if (savedCart) {
+  //       setCartItems(JSON.parse(savedCart));
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading cart:', error);
+  //   }
+  // };
+
+  // const saveCartItems = async (newCart) => {
+  //   try {
+  //     await AsyncStorage.setItem('cart', JSON.stringify(newCart));
+  //   } catch (error) {
+  //     console.error('Error saving cart:', error);
+  //   }
+  // };
+
+  // Helper to extract image filename from require or string
+  const getImageFilename = (img) => {
+    if (typeof img === 'string') return img;
+    // Try to extract filename from the _packagerAsset property (React Native require)
+    if (img && img.hasOwnProperty('uri')) {
+      return img.uri.split('/').pop();
+    }
+    if (img && img.hasOwnProperty('testUri')) {
+      return img.testUri.split('/').pop();
+    }
+    // Fallback: use a default image filename
+    return 'AI_Overfit_Hood.jpeg';
+  };
+
+  const addToCart = async () => {
+    if (!selectedProduct) return;
+    setIsAddingToCart(true);
+    try {
+      const realProduct = products.find(
+        p =>
+          p.name === selectedProduct.name &&
+          (selectedProduct.category ? p.category === selectedProduct.category : true)
+      );
+      const productToAdd = realProduct
+        ? { ...realProduct, reason: selectedProduct.reason, quantity: 1 }
+        : {
+            id: `ai_${selectedProduct.id}_${Date.now()}`,
+            name: selectedProduct.name,
+            brand: selectedProduct.brand,
+            price: selectedProduct.price,
+            image: getImageFilename(selectedProduct.image),
+            category: selectedProduct.category || '',
+            color: selectedProduct.color || '',
+            reason: selectedProduct.reason,
+            quantity: 1,
+          };
+      addToCartContext(productToAdd);
+      navigation.setParams && navigation.setParams({ cartUpdated: Date.now() });
+      Alert.alert(
+        '장바구니 추가 완료',
+        `${productToAdd.name}이(가) 장바구니에 추가되었습니다.`,
+        [{ text: '확인', onPress: () => closeModal() }]
+      );
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      Alert.alert('오류', '장바구니에 추가하는 중 오류가 발생했습니다.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null);
+  };
 
   // 실제 갤러리에서 사진 선택
   const selectImage = () => {
@@ -124,20 +222,6 @@ function BodyTypeScreen({ navigation }) {
       return;
     }
 
-    // API 키 유효성 검사
-    const apiValidation = validateAPIKeys();
-    if (!apiValidation.isValid) {
-      Alert.alert(
-        'API 설정 오류',
-        'API 키가 설정되지 않았습니다.\n\n' + apiValidation.errors.join('\n'),
-        [
-          { text: '디버그 실행', onPress: debugAI },
-          { text: '취소', style: 'cancel' }
-        ]
-      );
-      return;
-    }
-
     setIsAnalyzing(true);
 
     try {
@@ -148,16 +232,8 @@ function BodyTypeScreen({ navigation }) {
         return aiService.processVisionResults(visionResult, 'google');
       });
 
-      // AI 추천 시스템
-      const recommendations = await aiService.retryRequest(async () => {
-        try {
-          const aiRecommendations = await aiService.callOpenAIRecommendationAPI(analysisResult);
-          return aiService.transformRecommendations(aiRecommendations);
-        } catch (error) {
-          console.warn('AI 추천 실패, 기본 추천 사용:', error);
-          return getRecommendationsByBodyType(analysisResult.bodyType);
-        }
-      });
+      // Use predefined recommendations based on body type
+      const recommendations = getRecommendationsByBodyType(analysisResult.bodyType);
 
       setAnalysisResult(analysisResult);
       setRecommendations(recommendations);
@@ -169,13 +245,9 @@ function BodyTypeScreen({ navigation }) {
         `${analysisResult.bodyType} 체형으로 분석되었습니다.\n맞춤 상품을 확인해보세요!`,
         [{ text: '확인' }]
       );
-
     } catch (error) {
       console.error('Analysis error:', error);
-      
-      // 에러 타입에 따른 구체적인 메시지
       let errorMessage = ERROR_MESSAGES.ANALYSIS_FAILED;
-      
       if (error.message.includes('API key')) {
         errorMessage = ERROR_MESSAGES.INVALID_API_KEY;
       } else if (error.message.includes('quota')) {
@@ -185,7 +257,6 @@ function BodyTypeScreen({ navigation }) {
       } else if (error.message.includes('Bad request')) {
         errorMessage = ERROR_MESSAGES.INVALID_REQUEST;
       }
-      
       Alert.alert(
         '분석 실패',
         errorMessage + '\n\n' + error.message,
@@ -311,7 +382,7 @@ function BodyTypeScreen({ navigation }) {
   };
 
   const renderRecommendation = (item) => (
-    <TouchableOpacity key={item.id} style={styles.recommendationCard}>
+    <TouchableOpacity key={item.id} style={styles.recommendationCard} onPress={() => { setSelectedProduct(item); setModalVisible(true); }}>
       <Image 
         source={typeof item.image === 'string' ? {uri: item.image} : item.image}
         style={styles.recommendationImage}
@@ -333,7 +404,7 @@ function BodyTypeScreen({ navigation }) {
         <Text style={styles.headerTitle}>AI 체형 분석</Text>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
         {/* 사진 업로드 섹션 */}
         <View style={styles.uploadSection}>
           <Text style={styles.sectionTitle}>📸 전신 사진을 업로드하세요</Text>
@@ -389,20 +460,11 @@ function BodyTypeScreen({ navigation }) {
             <View style={styles.resultCard}>
               <View style={styles.resultHeader}>
                 <Text style={styles.resultTitle}>체형 분석 완료</Text>
-                <Text style={styles.confidenceText}>신뢰도 {analysisResult.confidence}%</Text>
               </View>
               <View style={styles.resultGrid}>
                 <View style={styles.resultItem}>
                   <Text style={styles.resultLabel}>체형</Text>
                   <Text style={styles.resultValue}>{analysisResult.bodyType}</Text>
-                </View>
-                <View style={styles.resultItem}>
-                  <Text style={styles.resultLabel}>상체</Text>
-                  <Text style={styles.resultValue}>{analysisResult.height}</Text>
-                </View>
-                <View style={styles.resultItem}>
-                  <Text style={styles.resultLabel}>하체</Text>
-                  <Text style={styles.resultValue}>{analysisResult.shoulderWidth}</Text>
                 </View>
               </View>
             </View>
@@ -421,6 +483,45 @@ function BodyTypeScreen({ navigation }) {
         )}
       </ScrollView>
 
+      {/* Product Detail Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{backgroundColor: '#fff', borderRadius: 12, padding: 20, margin: 20, width: '90%', maxWidth: 400, position: 'relative'}}>
+            <TouchableOpacity style={{position: 'absolute', top: 15, right: 15, zIndex: 1, padding: 5}} onPress={closeModal}>
+              <Ionicons name="close" size={24} color="#333" />
+            </TouchableOpacity>
+            {selectedProduct && (
+              <>
+                <Image 
+                  source={typeof selectedProduct.image === 'string' ? {uri: selectedProduct.image} : selectedProduct.image}
+                  style={{width: '100%', height: 300, borderRadius: 8, marginBottom: 15}} 
+                />
+                <View style={{marginBottom: 20}}>
+                  <Text style={{fontSize: 14, color: '#999', marginBottom: 5}}>{selectedProduct.brand}</Text>
+                  <Text style={{fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 8}}>{selectedProduct.name}</Text>
+                  <Text style={{fontSize: 14, color: '#666', marginBottom: 5}}>{selectedProduct.category || ''}</Text>
+                  {selectedProduct.color && <Text style={{fontSize: 14, color: '#666', marginBottom: 5}}>색상: {selectedProduct.color}</Text>}
+                  <Text style={{fontSize: 16, fontWeight: 'bold', color: '#000', marginTop: 5}}>{selectedProduct.price}</Text>
+                </View>
+                <TouchableOpacity 
+                  style={{backgroundColor: '#000', paddingVertical: 12, borderRadius: 8, alignItems: 'center'}} 
+                  onPress={addToCart}
+                  disabled={isAddingToCart}
+                >
+                  <Text style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
+                    {isAddingToCart ? '추가 중...' : '장바구니에 추가'}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -557,7 +658,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   resultSection: {
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 100,
   },
   resultCard: {
     backgroundColor: '#F8F9FA',
@@ -568,13 +670,14 @@ const styles = StyleSheet.create({
   },
   resultHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
   },
   resultTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
     color: '#333',
   },
   confidenceText: {

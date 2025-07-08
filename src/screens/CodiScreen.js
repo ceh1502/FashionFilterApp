@@ -3,6 +3,8 @@ import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Ima
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import products from '../data/products.json';
+import { useCart } from '../context/CartContext';
+
 
 // Image map for local images
 const imageMap = {
@@ -39,8 +41,8 @@ function CodiScreen({ navigation }) {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addToCart } = useCart();
 
   const filteredProducts = products.filter(product => {
     const categoryMatch = product.category === selectedCategory;
@@ -55,52 +57,35 @@ function CodiScreen({ navigation }) {
 
   // Load cart items when component mounts
   useEffect(() => {
-    loadCartItems();
+    // loadCartItems(); // Removed as per edit hint
   }, []);
 
-  const loadCartItems = async () => {
-    try {
-      const savedCart = await AsyncStorage.getItem('cart');
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
-    } catch (error) {
-      console.error('Error loading cart:', error);
-    }
-  };
+  // const loadCartItems = async () => { // Removed as per edit hint
+  //   try { // Removed as per edit hint
+  //     const savedCart = await AsyncStorage.getItem('cart'); // Removed as per edit hint
+  //     if (savedCart) { // Removed as per edit hint
+  //       setCartItems(JSON.parse(savedCart)); // Removed as per edit hint
+  //     } // Removed as per edit hint
+  //   } catch (error) { // Removed as per edit hint
+  //     console.error('Error loading cart:', error); // Removed as per edit hint
+  //   } // Removed as per edit hint
+  // }; // Removed as per edit hint
 
-  const saveCartItems = async (newCart) => {
-    try {
-      await AsyncStorage.setItem('cart', JSON.stringify(newCart));
-    } catch (error) {
-      console.error('Error saving cart:', error);
-    }
-  };
+  // const saveCartItems = async (newCart) => { // Removed as per edit hint
+  //   try { // Removed as per edit hint
+  //     await AsyncStorage.setItem('cart', JSON.stringify(newCart)); // Removed as per edit hint
+  //   } catch (error) { // Removed as per edit hint
+  //     console.error('Error saving cart:', error); // Removed as per edit hint
+  //   } // Removed as per edit hint
+  // }; // Removed as per edit hint
 
-  const addToCart = async () => {
+  const addToCartFromContext = async () => {
     if (!selectedProduct) return;
     
     setIsAddingToCart(true);
     
     try {
-      // Check if product is already in cart
-      const existingItemIndex = cartItems.findIndex(item => item.id === selectedProduct.id);
-      
-      let newCart;
-      if (existingItemIndex >= 0) {
-        // Update quantity if product already exists
-        newCart = [...cartItems];
-        newCart[existingItemIndex].quantity += 1;
-      } else {
-        // Add new product to cart
-        newCart = [...cartItems, { ...selectedProduct, quantity: 1 }];
-      }
-      
-      setCartItems(newCart);
-      await saveCartItems(newCart);
-      
-      // Trigger navigation event to update cart count
-      navigation.setParams({ cartUpdated: Date.now() });
+      addToCart(selectedProduct);
       
       Alert.alert(
         '장바구니 추가 완료',
@@ -244,7 +229,7 @@ function CodiScreen({ navigation }) {
                 
                 <TouchableOpacity 
                   style={codiStyles.addToCartButton}
-                  onPress={addToCart}
+                  onPress={addToCartFromContext}
                   disabled={isAddingToCart}
                 >
                   <Text style={codiStyles.addToCartText}>

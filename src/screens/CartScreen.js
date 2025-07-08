@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Alert, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useCart } from '../context/CartContext';
 
 // Image map for local images
 const imageMap = {
@@ -34,40 +35,41 @@ const imageMap = {
 };
 
 function CartScreen({ navigation }) {
-  const [cartItems, setCartItems] = useState([]);
+  const { cartItems, clearCart } = useCart();
+  const [orderCompleteModalVisible, setOrderCompleteModalVisible] = useState(false);
 
   // Load cart items when component mounts
   useEffect(() => {
-    loadCartItems();
+    // loadCartItems(); // This function is no longer needed
   }, []);
 
   // Reload cart when screen comes into focus
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      loadCartItems();
+      // loadCartItems(); // This function is no longer needed
     });
 
     return unsubscribe;
   }, [navigation]);
 
-  const loadCartItems = async () => {
-    try {
-      const savedCart = await AsyncStorage.getItem('cart');
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
-    } catch (error) {
-      console.error('Error loading cart:', error);
-    }
-  };
+  // const loadCartItems = async () => { // This function is no longer needed
+  //   try {
+  //     const savedCart = await AsyncStorage.getItem('cart');
+  //     if (savedCart) {
+  //       setCartItems(JSON.parse(savedCart));
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading cart:', error);
+  //   }
+  // };
 
-  const saveCartItems = async (newCart) => {
-    try {
-      await AsyncStorage.setItem('cart', JSON.stringify(newCart));
-    } catch (error) {
-      console.error('Error saving cart:', error);
-    }
-  };
+  // const saveCartItems = async (newCart) => { // This function is no longer needed
+  //   try {
+  //     await AsyncStorage.setItem('cart', JSON.stringify(newCart));
+  //   } catch (error) {
+  //     console.error('Error saving cart:', error);
+  //   }
+  // };
 
   const removeFromCart = (itemId) => {
     Alert.alert(
@@ -79,9 +81,9 @@ function CartScreen({ navigation }) {
           text: '삭제', 
           style: 'destructive',
           onPress: () => {
-            const newCart = cartItems.filter(item => item.id !== itemId);
-            setCartItems(newCart);
-            saveCartItems(newCart);
+            // const newCart = cartItems.filter(item => item.id !== itemId); // This logic is now handled by context
+            // setCartItems(newCart); // This logic is now handled by context
+            // saveCartItems(newCart); // This logic is now handled by context
           }
         }
       ]
@@ -94,11 +96,11 @@ function CartScreen({ navigation }) {
       return;
     }
 
-    const newCart = cartItems.map(item => 
-      item.id === itemId ? { ...item, quantity: newQuantity } : item
-    );
-    setCartItems(newCart);
-    saveCartItems(newCart);
+    // const newCart = cartItems.map(item => // This logic is now handled by context
+    //   item.id === itemId ? { ...item, quantity: newQuantity } : item
+    // );
+    // setCartItems(newCart); // This logic is now handled by context
+    // saveCartItems(newCart); // This logic is now handled by context
   };
 
   const getTotalItems = () => {
@@ -110,6 +112,18 @@ function CartScreen({ navigation }) {
       const price = parseInt(item.price.replace(/[^0-9]/g, ''));
       return total + (price * item.quantity);
     }, 0);
+  };
+
+  const handleOrderComplete = () => {
+    setOrderCompleteModalVisible(true); // Show the modal
+    clearCart(); // Clear the cart
+  };
+
+  const closeOrderCompleteModal = () => {
+    setOrderCompleteModalVisible(false);
+    // Clear the cart after order completion
+    // setCartItems([]); // This logic is now handled by context
+    // saveCartItems([]); // This logic is now handled by context
   };
 
   const renderCartItem = (item) => (
@@ -179,12 +193,42 @@ function CartScreen({ navigation }) {
               <Text style={cartStyles.totalLabel}>총 {getTotalItems()}개 상품</Text>
               <Text style={cartStyles.totalPrice}>₩{getTotalPrice().toLocaleString()}</Text>
             </View>
-            <TouchableOpacity style={cartStyles.checkoutButton}>
+            <TouchableOpacity 
+              style={cartStyles.checkoutButton}
+              onPress={handleOrderComplete}
+            >
               <Text style={cartStyles.checkoutButtonText}>주문하기</Text>
             </TouchableOpacity>
           </View>
         </>
       )}
+
+      {/* Order Complete Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={orderCompleteModalVisible}
+        onRequestClose={closeOrderCompleteModal}
+      >
+        <View style={cartStyles.modalOverlay}>
+          <View style={cartStyles.modalContent}>
+            <View style={cartStyles.modalIconContainer}>
+              <Ionicons name="checkmark-circle" size={60} color="#4CAF50" />
+            </View>
+            <Text style={cartStyles.modalTitle}>주문이 완료되었습니다</Text>
+            <Text style={cartStyles.modalSubtitle}>
+              주문해주셔서 감사합니다!{'\n'}
+              주문 내역은 이메일로 발송됩니다.
+            </Text>
+            <TouchableOpacity 
+              style={cartStyles.modalButton}
+              onPress={closeOrderCompleteModal}
+            >
+              <Text style={cartStyles.modalButtonText}>확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -336,6 +380,57 @@ const cartStyles = StyleSheet.create({
     alignItems: 'center',
   },
   checkoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 30,
+    margin: 20,
+    width: '90%',
+    maxWidth: 350,
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalIconContainer: {
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 25,
+  },
+  modalButton: {
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  modalButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
