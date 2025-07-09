@@ -35,7 +35,7 @@ const imageMap = {
 };
 
 function CartScreen({ navigation }) {
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [orderCompleteModalVisible, setOrderCompleteModalVisible] = useState(false);
 
   // Load cart items when component mounts
@@ -71,7 +71,7 @@ function CartScreen({ navigation }) {
   //   }
   // };
 
-  const removeFromCart = (itemId) => {
+  const removeFromCartHandler = (itemId) => {
     Alert.alert(
       '상품 삭제',
       '이 상품을 장바구니에서 삭제하시겠습니까?',
@@ -81,26 +81,15 @@ function CartScreen({ navigation }) {
           text: '삭제', 
           style: 'destructive',
           onPress: () => {
-            // const newCart = cartItems.filter(item => item.id !== itemId); // This logic is now handled by context
-            // setCartItems(newCart); // This logic is now handled by context
-            // saveCartItems(newCart); // This logic is now handled by context
+            removeFromCart(itemId);
           }
         }
       ]
     );
   };
 
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeFromCart(itemId);
-      return;
-    }
-
-    // const newCart = cartItems.map(item => // This logic is now handled by context
-    //   item.id === itemId ? { ...item, quantity: newQuantity } : item
-    // );
-    // setCartItems(newCart); // This logic is now handled by context
-    // saveCartItems(newCart); // This logic is now handled by context
+  const updateQuantityHandler = (itemId, newQuantity) => {
+    updateQuantity(itemId, newQuantity);
   };
 
   const getTotalItems = () => {
@@ -138,14 +127,14 @@ function CartScreen({ navigation }) {
         <View style={cartStyles.quantityContainer}>
           <TouchableOpacity 
             style={cartStyles.quantityButton}
-            onPress={() => updateQuantity(item.id, item.quantity - 1)}
+            onPress={() => updateQuantityHandler(item.id, item.quantity - 1)}
           >
             <Ionicons name="remove" size={20} color="#333" />
           </TouchableOpacity>
           <Text style={cartStyles.quantityText}>{item.quantity}</Text>
           <TouchableOpacity 
             style={cartStyles.quantityButton}
-            onPress={() => updateQuantity(item.id, item.quantity + 1)}
+            onPress={() => updateQuantityHandler(item.id, item.quantity + 1)}
           >
             <Ionicons name="add" size={20} color="#333" />
           </TouchableOpacity>
@@ -154,7 +143,7 @@ function CartScreen({ navigation }) {
       
       <TouchableOpacity 
         style={cartStyles.removeButton}
-        onPress={() => removeFromCart(item.id)}
+        onPress={() => removeFromCartHandler(item.id)}
       >
         <Ionicons name="trash-outline" size={24} color="#ff4444" />
       </TouchableOpacity>
@@ -249,7 +238,6 @@ const cartStyles = StyleSheet.create({
   headerCenter: {
     color: '#FFFFFF',
     fontSize: 14,
-//    fontWeight: 'bold',
     marginTop: 10,
   },
   headerTitle: {

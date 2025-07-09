@@ -31,11 +31,27 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const removeFromCart = (itemId) => {
+    setCartItems(prev => prev.filter(item => item.id !== itemId));
+  };
+
+  const updateQuantity = (itemId, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(itemId);
+      return;
+    }
+    setCartItems(prev => 
+      prev.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
   const clearCart = () => {
     setCartItems([]);
   };
 
-  const value = { cartItems, addToCart, setCartItems, clearCart };
+  const value = { cartItems, addToCart, removeFromCart, updateQuantity, setCartItems, clearCart };
 
   return (
     <CartContext.Provider value={value}>

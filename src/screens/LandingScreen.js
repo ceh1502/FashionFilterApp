@@ -13,11 +13,11 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-// 배경 이미지들 (동적으로 변경될 이미지들)
+// 배경 이미지들 (로컬 에셋 사용)
 const backgroundImages = [
-  'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=800&fit=crop',
+  require('../assets/images/landingScreen_1.jpg'),
+  require('../assets/images/landingScreen_2.jpg'),
+  require('../assets/images/landingScreen_3.jpg'),
 ];
 
 function LandingScreen({navigation}){
@@ -68,7 +68,7 @@ function LandingScreen({navigation}){
       {/* 배경 이미지 */}
       <Animated.View style={[styles.backgroundContainer, { opacity: fadeAnim }]}>
         <ImageBackground
-          source={{ uri: backgroundImages[currentImageIndex] }}
+          source={backgroundImages[currentImageIndex]}
           style={styles.backgroundImage}
           resizeMode="cover"
         >

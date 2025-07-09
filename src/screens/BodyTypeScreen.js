@@ -401,6 +401,12 @@ function BodyTypeScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       {/* 헤더 */}
       <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.headerLeftButton}
+          onPress={() => navigation.navigate('Landing')}
+        >
+          <Text style={styles.headerLeftText}>뮤신샤</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>AI 체형 분석</Text>
       </View>
 
@@ -539,6 +545,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     backgroundColor: '#000000',
     position: 'relative',
+  },
+  headerLeftButton: {
+    position: 'absolute',
+    left: 20,
+    zIndex: 1,
+    paddingTop: 10,
+  },
+  headerLeftText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   backButton: {
     position: 'absolute',

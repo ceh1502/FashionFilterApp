@@ -121,7 +121,7 @@
     "name": "스니커즈",
     "brand": "나이키",
     "category": "신발",
-    "color": "아이보리",
+    "color": "베이지",
     "price": "200,000KRW",
     "image": "shoe_2.webp"     
   }
@@ -131,7 +131,7 @@
     "name": "오버핏 후드",
     "brand": "무신사",
     "category": "상의",
-    "color": "회색",
+    "color": "검정",
     "price": "89,000KRW",
     "image": "AI_Overfit_Hood.jpeg"     
   }
@@ -171,7 +171,7 @@
     "name": "스트레이트 진",
     "brand": "LEVIS",
     "category": "하의",
-    "color": "파란색",
+    "color": "네이비",
     "price": "98,000KRW",
     "image": "AI_Straight_Jeans.jpeg"     
   }
@@ -181,7 +181,7 @@
     "name": "클래식 로퍼",
     "brand": "CLARKS",
     "category": "신발",
-    "color": "갈색",
+    "color": "베이지",
     "price": "189,000KRW",
     "image": "AI_Classic_Rop.jpeg"     
   }
@@ -191,7 +191,7 @@
     "name": "V넥 가디건",
     "brand": "COS",
     "category": "상의",
-    "color": "파란색",
+    "color": "네이비",
     "price": "119,000KRW",
     "image": "AI_V.jpeg"     
   }
@@ -211,7 +211,7 @@
     "name": "슬림 첼시부츠",
     "brand": "DR.MARTENS",
     "category": "신발",
-    "color": "갈색",
+    "color": "베이지",
     "price": "229,000KRW",
     "image": "AI_Slim_Boots.jpeg"     
   }
@@ -221,7 +221,7 @@
     "name": "피팅 티셔츠",
     "brand": "UNDER ARMOUR",
     "category": "상의",
-    "color": "파란색",
+    "color": "네이비",
     "price": "45,000KRW",
     "image": "AI_Fit_T.jpeg"     
   }

@@ -57,6 +57,8 @@ function MainTabs() {
           height: 70,
           borderTopWidth: 0.5,
           borderTopColor: '#eee',
+          paddingBottom: 10,
+          paddingTop: 10,
         },
       }}
     >

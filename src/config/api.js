@@ -53,7 +53,7 @@ export const BODY_ANALYSIS_CONFIG = {
     '슬림': ['slim', 'thin', 'slender', 'lean', 'skinny', 'petite', 'small', 'tiny', 'mini', 'slim fit', 'bone', "Skull", "Mandible", "Clavicle", "Scapula", "Sternum", "Ribs", "Humerus", "Radius", "Ulna", "Carpals", "Metacarpals", "Phalanges", "Vertebrae", "Pelvis", "Femur", "Patella", "Tibia", "Fibula", "Tarsals", "Metatarsals"],
     '보통': ['average', 'normal', 'medium', 'regular', 'standard', 'medium fit', 'balanced', 'average fit', 'balance'],
     '통통': ['full', 'curvy', 'plus size', 'round', 'chubby', 'full-figured', 'plus size fit', 'fat', 'thick', 'belly', 'stomach fat', 'wide', "big", "large", "massive", "size", "full"],
-    '운동체형': ['athletic', 'muscular', 'fit', 'toned', 'sporty', 'athletic build', 'athletic fit', "muscle", "muscle fit", "Stomache muscle", "Stomache muscle fit", 'gym']
+    '운동체형': ['athletic', 'muscular', 'fit', 'toned', 'sporty', 'athletic build', 'athletic fit', "muscle", "muscle fit", "Stomache muscle", "Stomache muscle fit", 'gym', "torso", "biceps"]
   },
   
   // 신뢰도 계산 가중치
